@@ -1,3 +1,4 @@
+#!/usr/bin/python3
 ############################################################################
 ## Version AR2.2.1 #########################################################
 ############################################################################
@@ -83,7 +84,8 @@ root = Tk()
 root.wm_title("AR2 software 2.0")
 #root.iconbitmap(r'AR2.ico')
 root.resizable(width=True, height=True)
-root.geometry('1360x720+0+0')
+root.geometry('1280x720+0+0')
+root.attributes('-zoomed', True)
 root.runTrue = 0
 
 global JogStepsStat
@@ -126,7 +128,7 @@ nb.add(tab7, text='   Info    ')
 
 def setCom():
   global ser  
-  port = "COM" + comPortEntryField.get()  
+  port = "/dev/ttyACM0" #+ comPortEntryField.get()  
   baud = 115200    
   ser = serial.Serial(port,baud)
 
@@ -5450,10 +5452,10 @@ playPhoto=PhotoImage(file="play-icon.gif")
 runProgBut.config(image=playPhoto,width="60",height="60")
 runProgBut.place(x=20, y=80)
 
-xboxBut = Button(tab1, borderwidth=3, height=43, width=60, command = xbox)
-xboxPhoto=PhotoImage(file="xbox.gif")
-xboxBut.config(image=xboxPhoto,width="60",height="43")
-xboxBut.place(x=1225, y=42)
+#xboxBut = Button(tab1, borderwidth=3, height=43, width=60, command = xbox)
+#xboxPhoto=PhotoImage(file="xbox.gif")
+#xboxBut.config(image=xboxPhoto,width="60",height="43")
+#xboxBut.place(x=1225, y=42)
 
 stopProgBut = Button(tab1, borderwidth=3, height=60, width=60, command = stopProg)
 stopPhoto=PhotoImage(file="stop-icon.gif")
@@ -7143,21 +7145,21 @@ link.place(x=10, y=9)
 def callback():
     webbrowser.open_new(r"https://www.paypal.me/ChrisAnnin")
 
-donateBut = Button(tab7, height=30, width=80, command = callback)
-donatePhoto=PhotoImage(file="pp.gif")
-donateBut.config(image=donatePhoto,width="80",height="30")
-donateBut.place(x=1250, y=2)
+#donateBut = Button(tab7, height=30, width=80, command = callback)
+#donatePhoto=PhotoImage(file="pp.gif")
+#donateBut.config(image=donatePhoto,width="80",height="30")
+#donateBut.place(x=1250, y=2)
 
 
 scroll = Scrollbar(tab7)
 scroll.pack(side=RIGHT, fill=Y)
 configfile = Text(tab7, wrap=WORD, width=166, height=40, yscrollcommand=scroll.set)
-filename='information.txt'
-with open(filename, 'r', encoding='utf-8-sig') as file:
-  configfile.insert(INSERT, file.read())
-configfile.pack(side="left")
-scroll.config(command=configfile.yview)
-configfile.place(x=10, y=40)
+#filename='information.txt'
+#with open(filename, 'r', encoding='utf-8-sig') as file:
+#  configfile.insert(INSERT, file.read())
+#configfile.pack(side="left")
+#scroll.config(command=configfile.yview)
+#configfile.place(x=10, y=40)
 
 
 
@@ -7526,7 +7528,7 @@ AR2 ROBOT DESIGN FOR PROFIT.\n\
 Copyright (c) 2017, Chris Annin"
 
 tkinter.messagebox.showwarning("AR2 License / Copyright notice", msg)
-xboxUse = 0
+xboxUse = 1
 
 tab1.mainloop()
 
