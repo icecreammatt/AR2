@@ -1,3 +1,5 @@
+#!/usr/bin/python2.7
+
 ##########################################################################
 ## Version 2.1.5 #########################################################
 ##########################################################################
@@ -22,7 +24,7 @@
         * you must give appropriate credit and indicate if changes were made. You may do
           so in any reasonable manner, but not in any way that suggests the
           licensor endorses you or your use.
-		* Selling robots, robot parts, or any versions of robots or software based on this 
+		* Selling robots, robot parts, or any versions of robots or software based on this
 		  work is strictly prohibited.
 
     THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
@@ -60,13 +62,13 @@ SPEED UP CALIBRATION MOVE
 ##########################################################################
 
 from Tkinter import *
-import ttk
 import pickle
 import serial
 import time
 import threading
 import Queue
 import math
+import ttk
 import tkMessageBox
 import webbrowser
 
@@ -74,13 +76,14 @@ import webbrowser
 
 root = Tk()
 root.wm_title("AR2 software 1.5")
-root.iconbitmap(r'AR2.ico')
+#root.iconbitmap(r'AR2.ico')
 root.resizable(width=True, height=True)
-root.geometry('1360x720+0+0')
+root.geometry('1280x720+0+0')
+root.attributes('-zoomed',True)
 
 root.runTrue = 0
 
-nb = ttk.Notebook(root, width=1366, height=698)
+nb = ttk.Notebook(root, width=1280, height=635)
 nb.place(x=0, y=0)
 
 tab1 = ttk.Frame(nb)
@@ -219,19 +222,19 @@ JogStepsStat = IntVar()
 
 
 def setCom():
-  global ser  
-  port = "COM" + comPortEntryField.get()  
-  baud = 9600 
+  global ser
+  port = "/dev/ttyACM0" #+ comPortEntryField.get()
+  baud = 115200
   ser = serial.Serial(port, baud)
 
 def deleteitem():
   selRow = tab1.progView.curselection()[0]
-  selection = tab1.progView.curselection()  
+  selection = tab1.progView.curselection()
   tab1.progView.delete(selection[0])
-  tab1.progView.select_set(selRow)  
+  tab1.progView.select_set(selRow)
   value=tab1.progView.get(0,END)
-  pickle.dump(value,open(ProgEntryField.get(),"wb"))
-    
+  pickle.dump(value,open("/home/pi/Documents/AR2/RaspberryPi/"+ProgEntryField.get(),"wb"))
+
 
 def executeRow():
   global J1AngCur
@@ -262,10 +265,10 @@ def executeRow():
     ProgEntryField.delete(0, 'end')
     ProgEntryField.insert(0,progNum)
     loadProg()
-    time.sleep(.4) 
+    time.sleep(.4)
     index = 0
     tab1.progView.selection_clear(0, END)
-    tab1.progView.select_set(index) 
+    tab1.progView.select_set(index)
   ##Return Program##
   if (cmdType == "Return"):
     lastRow = tab1.lastRow
@@ -273,10 +276,10 @@ def executeRow():
     ProgEntryField.delete(0, 'end')
     ProgEntryField.insert(0,lastProg)
     loadProg()
-    time.sleep(.4) 
+    time.sleep(.4)
     index = 0
     tab1.progView.selection_clear(0, END)
-    tab1.progView.select_set(lastRow)  
+    tab1.progView.select_set(lastRow)
   ##Servo Command##
   if (cmdType == "Servo "):
     servoIndex = command.find("number ")
@@ -287,14 +290,14 @@ def executeRow():
     ser.write(command +"\n")
     ser.flushInput()
     time.sleep(.2)
-    ser.read() 
+    ser.read()
   ##If Input On Jump to Tab##
   if (cmdType == "If On "):
     inputIndex = command.find("Input-")
     tabIndex = command.find("Tab-")
     inputNum = str(command[inputIndex+6:tabIndex-9])
     tabNum = str(command[tabIndex+4:])
-    command = "JFX"+inputNum+"T"+tabNum   
+    command = "JFX"+inputNum+"T"+tabNum
     ser.write(command +"\n")
     ser.flushInput()
     time.sleep(.2)
@@ -311,7 +314,7 @@ def executeRow():
     tabIndex = command.find("Tab-")
     inputNum = str(command[inputIndex+6:tabIndex-9])
     tabNum = str(command[tabIndex+4:])
-    command = "JFX"+inputNum+"T"+tabNum   
+    command = "JFX"+inputNum+"T"+tabNum
     ser.write(command +"\n")
     ser.flushInput()
     time.sleep(.2)
@@ -327,7 +330,7 @@ def executeRow():
     tabNum = str(command[tabIndex+4:])
     index = tab1.progView.get(0, "end").index("Tab Number " + tabNum)
     tab1.progView.selection_clear(0, END)
-    tab1.progView.select_set(index)  
+    tab1.progView.select_set(index)
   ##Set Output ON Command##
   if (cmdType == "Out On"):
     outputIndex = command.find("Output-")
@@ -336,7 +339,7 @@ def executeRow():
     ser.write(command +"\n")
     ser.flushInput()
     time.sleep(.2)
-    ser.read() 
+    ser.read()
   ##Set Output OFF Command##
   if (cmdType == "Out Of"):
     outputIndex = command.find("Output-")
@@ -345,7 +348,7 @@ def executeRow():
     ser.write(command +"\n")
     ser.flushInput()
     time.sleep(.2)
-    ser.read() 
+    ser.read()
   ##Wait Input ON Command##
   if (cmdType == "Wait I"):
     inputIndex = command.find("Input-")
@@ -354,7 +357,7 @@ def executeRow():
     ser.write(command +"\n")
     ser.flushInput()
     time.sleep(.2)
-    ser.read() 
+    ser.read()
   ##Wait Input OFF Command##
   if (cmdType == "Wait O"):
     inputIndex = command.find("Input-")
@@ -363,7 +366,7 @@ def executeRow():
     ser.write(command +"\n")
     ser.flushInput()
     time.sleep(.2)
-    ser.read() 
+    ser.read()
   ##Wait Time Command##
   if (cmdType == "Wait T"):
     timeIndex = command.find("Seconds-")
@@ -372,8 +375,8 @@ def executeRow():
     ser.write(command +"\n")
     ser.flushInput()
     time.sleep(.2)
-    ser.read() 
-  ##Set Register##  
+    ser.read()
+  ##Set Register##
   if (cmdType == "Regist"):
     regNumIndex = command.find("Register ")
     regEqIndex = command.find(" = ")
@@ -383,16 +386,16 @@ def executeRow():
     if (testOper == "++"):
       regCEqVal = str(command[regEqIndex+5:])
       curRegVal = eval(regEntry).get()
-      regEqVal = str(int(regCEqVal)+int(curRegVal))      
+      regEqVal = str(int(regCEqVal)+int(curRegVal))
     elif (testOper == "--"):
       regCEqVal = str(command[regEqIndex+5:])
       curRegVal = eval(regEntry).get()
       regEqVal = str(int(curRegVal)-int(regCEqVal))
     else:
-      regEqVal = str(command[regEqIndex+3:])    
+      regEqVal = str(command[regEqIndex+3:])
     eval(regEntry).delete(0, 'end')
     eval(regEntry).insert(0,regEqVal)
-  ##Set Stor Position##  
+  ##Set Stor Position##
   if (cmdType == "Store "):
     regNumIndex = command.find("Store Position ")
     regElIndex = command.find("Element")
@@ -404,23 +407,23 @@ def executeRow():
     if (testOper == "++"):
       regCEqVal = str(command[regEqIndex+4:])
       curRegVal = eval(regEntry).get()
-      regEqVal = str(float(regCEqVal)+float(curRegVal))      
+      regEqVal = str(float(regCEqVal)+float(curRegVal))
     elif (testOper == "--"):
       regCEqVal = str(command[regEqIndex+5:])
       curRegVal = eval(regEntry).get()
       regEqVal = str(float(curRegVal)-float(regCEqVal))
     else:
-      regEqVal = str(command[regEqIndex+3:])    
+      regEqVal = str(command[regEqIndex+3:])
     eval(regEntry).delete(0, 'end')
     eval(regEntry).insert(0,regEqVal)
   ## Get Vision ##
   if (cmdType == "Get Vi"):
-    testvis()	
+    testvis()
   ##If Register Jump to Row##
   if (cmdType == "If Reg"):
     regIndex = command.find("If Register ")
     regEqIndex = command.find(" = ")
-    regJmpIndex = command.find(" Jump to Tab ")    
+    regJmpIndex = command.find(" Jump to Tab ")
     regNum = str(command[regIndex+12:regEqIndex])
     regEq = str(command[regEqIndex+3:regJmpIndex])
     tabNum = str(command[regJmpIndex+13:])
@@ -429,21 +432,21 @@ def executeRow():
     if (curRegVal == regEq):
       index = tab1.progView.get(0, "end").index("Tab Number " + tabNum)
       tab1.progView.selection_clear(0, END)
-      tab1.progView.select_set(index)  
-  ##Calibrate Command##   
+      tab1.progView.select_set(index)
+  ##Calibrate Command##
   if (cmdType == "Calibr"):
     calRobotAll()
     if (calStat == 0):
       stopProg()
-  ##Move J Command##  
-  if (cmdType == "Move J"):  
+  ##Move J Command##
+  if (cmdType == "Move J"):
     J1newIndex = command.find("X) ")
     J2newIndex = command.find("Y) ")
     J3newIndex = command.find("Z) ")
     J4newIndex = command.find("W) ")
     J5newIndex = command.find("P) ")
     J6newIndex = command.find("R) ")
-    TRnewIndex = command.find("T) ")	
+    TRnewIndex = command.find("T) ")
     SpeedIndex = command.find("Speed-")
     ACCdurIndex = command.find("Ad")
     ACCspdIndex = command.find("As")
@@ -464,15 +467,15 @@ def executeRow():
     DECspd = command[DECspdIndex+3:WristConfIndex-1]
     WC = command[WristConfIndex+1:]
     TCX = 0
-    TCY = 0 
+    TCY = 0
     TCZ = 0
     TCRx = 0
     TCRy = 0
-    TCRz = 0 
+    TCRz = 0
     MoveXYZ(CX,CY,CZ,CRx,CRy,CRz,newSpeed,ACCdur,ACCspd,DECdur,DECspd,WC,TCX,TCY,TCZ,TCRx,TCRy,TCRz,Track)
-  ##Offs J Command##  
-  if (cmdType == "OFFS J"): 
-    SPnewInex = command.find("[SP:")  
+  ##Offs J Command##
+  if (cmdType == "OFFS J"):
+    SPnewInex = command.find("[SP:")
     SPendInex = command.find("] [")
     J1newIndex = command.find("X) ")
     J2newIndex = command.find("Y) ")
@@ -480,7 +483,7 @@ def executeRow():
     J4newIndex = command.find("W) ")
     J5newIndex = command.find("P) ")
     J6newIndex = command.find("R) ")
-    TRnewIndex = command.find("T) ")	
+    TRnewIndex = command.find("T) ")
     SpeedIndex = command.find("Speed-")
     ACCdurIndex = command.find("Ad")
     ACCspdIndex = command.find("As")
@@ -508,17 +511,17 @@ def executeRow():
     DECspd = command[DECspdIndex+3:WristConfIndex-1]
     WC = command[WristConfIndex+1:]
     TCX = 0
-    TCY = 0 
+    TCY = 0
     TCZ = 0
     TCRx = 0
     TCRy = 0
-    TCRz = 0 
-    MoveXYZ(CX,CY,CZ,CRx,CRy,CRz,newSpeed,ACCdur,ACCspd,DECdur,DECspd,WC,TCX,TCY,TCZ,TCRx,TCRy,TCRz,Track)   
-  ##Move SP Command##  
-  if (cmdType == "Move S"): 
-    SPnewInex = command.find("[SP:")  
+    TCRz = 0
+    MoveXYZ(CX,CY,CZ,CRx,CRy,CRz,newSpeed,ACCdur,ACCspd,DECdur,DECspd,WC,TCX,TCY,TCZ,TCRx,TCRy,TCRz,Track)
+  ##Move SP Command##
+  if (cmdType == "Move S"):
+    SPnewInex = command.find("[SP:")
     SPendInex = command.find("] [")
-    TRnewIndex = command.find("T) ")	
+    TRnewIndex = command.find("T) ")
     SpeedIndex = command.find("Speed-")
     ACCdurIndex = command.find("Ad")
     ACCspdIndex = command.find("As")
@@ -540,19 +543,19 @@ def executeRow():
     DECspd = command[DECspdIndex+3:WristConfIndex-1]
     WC = command[WristConfIndex+1:]
     TCX = 0
-    TCY = 0 
+    TCY = 0
     TCZ = 0
     TCRx = 0
     TCRy = 0
-    TCRz = 0 
+    TCRz = 0
     MoveXYZ(CX,CY,CZ,CRx,CRy,CRz,newSpeed,ACCdur,ACCspd,DECdur,DECspd,WC,TCX,TCY,TCZ,TCRx,TCRy,TCRz,Track)
-  ##OFFS SP Command##  
-  if (cmdType == "OFFS S"): 
-    SPnewInex = command.find("[SP:")  
+  ##OFFS SP Command##
+  if (cmdType == "OFFS S"):
+    SPnewInex = command.find("[SP:")
     SPendInex = command.find("] offs")
-    SP2newInex = command.find("[*SP:")  
+    SP2newInex = command.find("[*SP:")
     SP2endInex = command.find("]  [")
-    TRnewIndex = command.find("T) ")	
+    TRnewIndex = command.find("T) ")
     SpeedIndex = command.find("Speed-")
     ACCdurIndex = command.find("Ad")
     ACCspdIndex = command.find("As")
@@ -566,7 +569,7 @@ def executeRow():
     CZ = float(eval("SP_"+SP+"_E3_EntryField").get()) + float(eval("SP_"+SP2+"_E3_EntryField").get())
     CRx = float(eval("SP_"+SP+"_E4_EntryField").get()) + float(eval("SP_"+SP2+"_E4_EntryField").get())
     CRy = float(eval("SP_"+SP+"_E5_EntryField").get()) + float(eval("SP_"+SP2+"_E5_EntryField").get())
-    CRz = float(eval("SP_"+SP+"_E6_EntryField").get()) + float(eval("SP_"+SP2+"_E6_EntryField").get())	
+    CRz = float(eval("SP_"+SP+"_E6_EntryField").get()) + float(eval("SP_"+SP2+"_E6_EntryField").get())
     Track = float(command[TRnewIndex+3:SpeedIndex-1])
     newSpeed = str(command[SpeedIndex+6:ACCdurIndex-1])
     ACCdur = command[ACCdurIndex+3:ACCspdIndex-1]
@@ -575,25 +578,25 @@ def executeRow():
     DECspd = command[DECspdIndex+3:WristConfIndex-1]
     WC = command[WristConfIndex+1:]
     TCX = 0
-    TCY = 0 
+    TCY = 0
     TCZ = 0
     TCRx = 0
     TCRy = 0
-    TCRz = 0 
-    MoveXYZ(CX,CY,CZ,CRx,CRy,CRz,newSpeed,ACCdur,ACCspd,DECdur,DECspd,WC,TCX,TCY,TCZ,TCRx,TCRy,TCRz,Track)   	
-  rowinproc = 0   
+    TCRz = 0
+    MoveXYZ(CX,CY,CZ,CRx,CRy,CRz,newSpeed,ACCdur,ACCspd,DECdur,DECspd,WC,TCX,TCY,TCZ,TCRx,TCRy,TCRz,Track)
+  rowinproc = 0
 
-	 
-	 
+
+
 def gotoFineCalPos():
-  command = fineCalEntryField.get() 
+  command = fineCalEntryField.get()
   J1newIndex = command.find("X) ")
   J2newIndex = command.find("Y) ")
   J3newIndex = command.find("Z) ")
   J4newIndex = command.find("W) ")
   J5newIndex = command.find("P) ")
   J6newIndex = command.find("R) ")
-  TRnewIndex = command.find("T) ")	
+  TRnewIndex = command.find("T) ")
   SpeedIndex = command.find("Speed-")
   ACCdurIndex = command.find("Ad")
   ACCspdIndex = command.find("As")
@@ -614,24 +617,24 @@ def gotoFineCalPos():
   DECspd = command[DECspdIndex+3:WristConfIndex-1]
   WC = command[WristConfIndex+1:]
   TCX = 0
-  TCY = 0 
+  TCY = 0
   TCZ = 0
   TCRx = 0
   TCRy = 0
-  TCRz = 0 
+  TCRz = 0
   MoveXYZ(CX,CY,CZ,CRx,CRy,CRz,newSpeed,ACCdur,ACCspd,DECdur,DECspd,WC,TCX,TCY,TCZ,TCRx,TCRy,TCRz,Track)
   almStatusLab.config(text="MOVED TO FINE CALIBRATION POSITION", bg = "yellow")
 
-	
+
 def exeFineCalPos():
-  command = fineCalEntryField.get() 
+  command = fineCalEntryField.get()
   J1newIndex = command.find("X) ")
   J2newIndex = command.find("Y) ")
   J3newIndex = command.find("Z) ")
   J4newIndex = command.find("W) ")
   J5newIndex = command.find("P) ")
   J6newIndex = command.find("R) ")
-  TRnewIndex = command.find("T) ")	
+  TRnewIndex = command.find("T) ")
   SpeedIndex = command.find("Speed-")
   ACCdurIndex = command.find("Ad")
   ACCspdIndex = command.find("As")
@@ -652,17 +655,17 @@ def exeFineCalPos():
   DECspd = command[DECspdIndex+3:WristConfIndex-1]
   WC = command[WristConfIndex+1:]
   TCX = 0
-  TCY = 0 
+  TCY = 0
   TCZ = 0
   TCRx = 0
   TCRy = 0
-  TCRz = 0 
+  TCRz = 0
   CalXYZ(CX,CY,CZ,CRx,CRy,CRz,newSpeed,ACCdur,ACCspd,DECdur,DECspd,WC,TCX,TCY,TCZ,TCRx,TCRy,TCRz,Track)
   almStatusLab.config(text="CALIBRATED TO FINE CALIBRATE POSITION", bg = "orange")
 
-  
+
 def stepFwd():
-    executeRow() 
+    executeRow()
     selRow = tab1.progView.curselection()[0]
     last = tab1.progView.index('end')
     for row in range (0,selRow):
@@ -681,10 +684,10 @@ def stepFwd():
     except:
       curRowEntryField.delete(0, 'end')
       curRowEntryField.insert(0,"---")
- 
+
 
 def stepRev():
-    executeRow()  
+    executeRow()
     selRow = tab1.progView.curselection()[0]
     last = tab1.progView.index('end')
     for row in range (0,selRow):
@@ -703,7 +706,7 @@ def stepRev():
     except:
       curRowEntryField.delete(0, 'end')
       curRowEntryField.insert(0,"---")
- 
+
 
 def runProg():
   def threadProg():
@@ -725,7 +728,7 @@ def runProg():
       rowinproc = 1
       executeRow()
       while rowinproc == 1:
-        time.sleep(.2)	  
+        time.sleep(.01)
       selRow = tab1.progView.curselection()[0]
       last = tab1.progView.index('end')
       for row in range (0,selRow):
@@ -737,14 +740,14 @@ def runProg():
       selRow += 1
       tab1.progView.select_set(selRow)
       curRow += 1
-      time.sleep(.2)
+      time.sleep(.03)
       try:
         selRow = tab1.progView.curselection()[0]
         curRowEntryField.delete(0, 'end')
         curRowEntryField.insert(0,selRow)
       except:
         curRowEntryField.delete(0, 'end')
-        curRowEntryField.insert(0,"---") 
+        curRowEntryField.insert(0,"---")
         tab1.runTrue = 0
         runStatusLab.config(text='PROGRAM STOPPED', bg = "red")
   t = threading.Thread(target=threadProg)
@@ -753,15 +756,15 @@ def runProg():
 
 def stopProg():
   lastProg = ""
-  tab1.runTrue = 0 
+  tab1.runTrue = 0
   if (tab1.runTrue == 0):
     runStatusLab.config(text='PROGRAM STOPPED', bg = "red")
   else:
     runStatusLab.config(text='PROGRAM RUNNING', bg = "green")
 
 
-	
-	
+
+
 def calRobotAll():
   calaxis = "111111"
   speed = "50"
@@ -770,27 +773,27 @@ def calRobotAll():
   if(J1caldir == J1motdir):
     J1caldrive = "1"
   else:
-    J1caldrive = "0"      
+    J1caldrive = "0"
   if(J2caldir == J2motdir):
     J2caldrive = "1"
   else:
-    J2caldrive = "0" 
+    J2caldrive = "0"
   if(J3caldir == J3motdir):
     J3caldrive = "1"
   else:
-    J3caldrive = "0" 
+    J3caldrive = "0"
   if(J4caldir == J4motdir):
     J4caldrive = "1"
   else:
-    J4caldrive = "0" 	
+    J4caldrive = "0"
   if(J5caldir == J5motdir):
     J5caldrive = "1"
   else:
-    J5caldrive = "0" 	
+    J5caldrive = "0"
   if(J6caldir == J6motdir):
     J6caldrive = "1"
   else:
-    J6caldrive = "0"        
+    J6caldrive = "0"
   command = "MJA"+J1caldrive+"500"+"B"+J2caldrive+"500"+"C"+J3caldrive+"500"+"D"+J4caldrive+"500"+"E"+J5caldrive+"500"+"F"+J6caldrive+"500"+"S15G10H10I10K10"
   ser.write(command +"\n")
   ser.flushInput()
@@ -806,7 +809,7 @@ def calRobotJ1():
   if(J1caldir == J1motdir):
     J1caldrive = "1"
   else:
-    J1caldrive = "0"            
+    J1caldrive = "0"
   command = "MJA"+J1caldrive+"500"+"S15G10H10I10K10"
   ser.write(command +"\n")
   ser.flushInput()
@@ -818,17 +821,17 @@ def calRobotJ2():
   calaxis = "010000"
   speed = "40"
   calRobot(calaxis,speed)
-  ### calc correct calibration direction    
+  ### calc correct calibration direction
   if(J2caldir == J2motdir):
     J2caldrive = "1"
   else:
-    J2caldrive = "0"     
+    J2caldrive = "0"
   command = "MJB"+J2caldrive+"500"+"S15G10H10I10K10"
   ser.write(command +"\n")
   ser.flushInput()
   speed = "8"
   time.sleep(2.5)
-  calRobot(calaxis,speed)  
+  calRobot(calaxis,speed)
 
 def calRobotJ3():
   calaxis = "001000"
@@ -838,13 +841,13 @@ def calRobotJ3():
   if(J3caldir == J3motdir):
     J3caldrive = "1"
   else:
-    J3caldrive = "0"        
+    J3caldrive = "0"
   command = "MJC"+J3caldrive+"500"+"S15G10H10I10K10"
   ser.write(command +"\n")
   ser.flushInput()
   speed = "8"
   time.sleep(2.5)
-  calRobot(calaxis,speed)  
+  calRobot(calaxis,speed)
 
 def calRobotJ4():
   calaxis = "000100"
@@ -854,13 +857,13 @@ def calRobotJ4():
   if(J4caldir == J4motdir):
     J4caldrive = "1"
   else:
-    J4caldrive = "0" 	   
+    J4caldrive = "0"
   command = "MJD"+J4caldrive+"500"+"S15G10H10I10K10"
   ser.write(command +"\n")
   ser.flushInput()
   speed = "8"
   time.sleep(2.5)
-  calRobot(calaxis,speed)  
+  calRobot(calaxis,speed)
 
 def calRobotJ5():
   calaxis = "000010"
@@ -870,13 +873,13 @@ def calRobotJ5():
   if(J5caldir == J5motdir):
     J5caldrive = "1"
   else:
-    J5caldrive = "0" 	       
+    J5caldrive = "0"
   command = "MJE"+J5caldrive+"500"+"S15G10H10I10K10"
   ser.write(command +"\n")
   ser.flushInput()
   speed = "8"
   time.sleep(2.5)
-  calRobot(calaxis,speed)  
+  calRobot(calaxis,speed)
 
 def calRobotJ6():
   calaxis = "000001"
@@ -886,15 +889,15 @@ def calRobotJ6():
   if(J6caldir == J6motdir):
     J6caldrive = "1"
   else:
-    J6caldrive = "0"        
+    J6caldrive = "0"
   command = "MJF"+J6caldrive+"500"+"S15G10H10I10K10"
   ser.write(command +"\n")
   ser.flushInput()
   speed = "8"
   time.sleep(2.5)
-  calRobot(calaxis,speed)  
-	
-	
+  calRobot(calaxis,speed)
+
+
 
 def calRobot(calaxis,speed):
   J1axis = calaxis[:-5]
@@ -911,49 +914,49 @@ def calRobot(calaxis,speed):
   if (J2axis == "1"):
     J2step = str(J2StepLim)
   else:
-    J2step = "0" 	
+    J2step = "0"
   if (J3axis == "1"):
     J3step = str(J3StepLim)
   else:
-    J3step = "0" 	
+    J3step = "0"
   if (J4axis == "1"):
     J4step = str(J4StepLim)
   else:
-    J4step = "0" 
+    J4step = "0"
   if (J5axis == "1"):
     J5step = str(J5StepLim)
   else:
-    J5step = "0" 
+    J5step = "0"
   if (J6axis == "1"):
     J6step = str(J6StepLim)
   else:
-    J6step = "0" 	
+    J6step = "0"
   ### calc correct calibration direction
   if(J1caldir == J1motdir):
     J1caldrive = "0"
   else:
-    J1caldrive = "1"      
+    J1caldrive = "1"
   if(J2caldir == J2motdir):
     J2caldrive = "0"
   else:
-    J2caldrive = "1" 
+    J2caldrive = "1"
   if(J3caldir == J3motdir):
     J3caldrive = "0"
   else:
-    J3caldrive = "1" 
+    J3caldrive = "1"
   if(J4caldir == J4motdir):
     J4caldrive = "0"
   else:
-    J4caldrive = "1" 	
+    J4caldrive = "1"
   if(J5caldir == J5motdir):
     J5caldrive = "0"
   else:
-    J5caldrive = "1" 	
+    J5caldrive = "1"
   if(J6caldir == J6motdir):
     J6caldrive = "0"
   else:
-    J6caldrive = "1"    
-  command = "LL"+"A"+J1caldrive+J1step+"B"+J2caldrive+J2step+"C"+J3caldrive+J3step+"D"+J4caldrive+J4step+"E"+J5caldrive+J5step+"F"+J6caldrive+J6step+"S"+str(speed)  
+    J6caldrive = "1"
+  command = "LL"+"A"+J1caldrive+J1step+"B"+J2caldrive+J2step+"C"+J3caldrive+J3step+"D"+J4caldrive+J4step+"E"+J5caldrive+J5step+"F"+J6caldrive+J6step+"S"+str(speed)
   ser.write(command +"\n")
   ser.flushInput()
   calvalue = ser.readline()
@@ -1012,7 +1015,7 @@ def calRobot(calaxis,speed):
         J4AngCur = J4PosAngLim
       J4curAngEntryField.delete(0, 'end')
       J4curAngEntryField.insert(0,str(J4AngCur))
-    ###########	
+    ###########
     ##J5##
     global J5StepCur
     global J5AngCur
@@ -1025,7 +1028,7 @@ def calRobot(calaxis,speed):
         J5AngCur = J5PosAngLim
       J5curAngEntryField.delete(0, 'end')
       J5curAngEntryField.insert(0,str(J5AngCur))
-    ###########	
+    ###########
     ##J6##
     global J6StepCur
     global J6AngCur
@@ -1038,16 +1041,16 @@ def calRobot(calaxis,speed):
         J6AngCur = J6PosAngLim
       J6curAngEntryField.delete(0, 'end')
       J6curAngEntryField.insert(0,str(J6AngCur))
-    ###########		
+    ###########
     value=calibration.get(0,END)
-    pickle.dump(value,open("ARbot.cal","wb"))
+    pickle.dump(value,open("/home/pi/Documents/AR2/RaspberryPi/ARbot.cal","wb"))
     almStatusLab.config(text='CALIBRATION SUCCESSFUL', bg = "grey")
     DisplaySteps()
   else:
     if (calvalue == "fail\n"):
       calStat = 0
       almStatusLab.config(text="CALIBRATION FAILED", bg = "red")
-  CalcFwdKin()	  
+  CalcFwdKin()
   savePosData()
 
 
@@ -1109,9 +1112,9 @@ def calRobotMid():
   TrackcurPos = TrackLength/2
   TrackcurEntryField.delete(0, 'end')
   TrackcurEntryField.insert(0,str(TrackcurPos))
-  ###########  
+  ###########
   value=calibration.get(0,END)
-  pickle.dump(value,open("ARbot.cal","wb"))
+  pickle.dump(value,open("/home/pi/Documents/AR2/RaspberryPi/ARbot.cal","wb"))
   almStatusLab.config(text="CALIBRATION FORCE TO MIDPOINT / DANGER", bg = "orange")
   CalcFwdKin()
   DisplaySteps()
@@ -1132,7 +1135,7 @@ def savePosData():
   calibration.insert(END, J5AngCur)
   calibration.insert(END, J6StepCur)
   calibration.insert(END, J6AngCur)
-  calibration.insert(END, comPortEntryField.get())  
+  calibration.insert(END, comPortEntryField.get())
   calibration.insert(END, ProgEntryField.get())
   calibration.insert(END, servo0onEntryField.get())
   calibration.insert(END, servo0offEntryField.get())
@@ -1212,10 +1215,10 @@ def savePosData():
   calibration.insert(END, VisPicXMEntryField.get())
   calibration.insert(END, VisPicYPEntryField.get())
   calibration.insert(END, VisPicYMEntryField.get())
-  
+
   ###########
   value=calibration.get(0,END)
-  pickle.dump(value,open("ARbot.cal","wb"))
+  pickle.dump(value,open("/home/pi/Documents/AR2/RaspberryPi/ARbot.cal","wb"))
 
 
 def SaveAndApplyCalibration():
@@ -1297,7 +1300,7 @@ def SaveAndApplyCalibration():
   global J3caldir
   global J4caldir
   global J5caldir
-  global J6caldir 
+  global J6caldir
   global MotDir
   global J1motdir
   global J2motdir
@@ -1317,8 +1320,8 @@ def SaveAndApplyCalibration():
   global VisEndXpix
   global VisEndXmm
   global VisEndYpix
-  global VisEndYmm  
-  
+  global VisEndYmm
+
   ###joint variables
   J1NegAngLim = int(J1NegAngLimEntryField.get())
   J1PosAngLim = int(J1PosAngLimEntryField.get())
@@ -1347,29 +1350,29 @@ def SaveAndApplyCalibration():
   ####AXIS LIMITS LABELS GREEN######
   AxLimCol = "OliveDrab4"
   J1PlimLab = Label(tab1, font=("Arial", 8), fg=AxLimCol, text = "+"+str(int(J1PosAngLim)))
-  J1PlimLab.place(x=685, y=10)
+  J1PlimLab.place(x=630, y=10)
   J1NlimLab = Label(tab1, font=("Arial", 8), fg=AxLimCol, text = str(int(J1NegAngLim)))
-  J1NlimLab.place(x=635, y=10)
+  J1NlimLab.place(x=580, y=10)
   J2PlimLab = Label(tab1, font=("Arial", 8), fg=AxLimCol, text = str(int(J2PosAngLim)))
-  J2PlimLab.place(x=780, y=10)
+  J2PlimLab.place(x=725, y=10)
   J2NlimLab = Label(tab1, font=("Arial", 8), fg=AxLimCol, text = str(int(J2NegAngLim)))
-  J2NlimLab.place(x=725, y=10)
+  J2NlimLab.place(x=670, y=10)
   J3PlimLab = Label(tab1, font=("Arial", 8), fg=AxLimCol, text = "+"+str(int(J3PosAngLim)))
-  J3PlimLab.place(x=868, y=10)
+  J3PlimLab.place(x=815, y=10)
   J3NlimLab = Label(tab1, font=("Arial", 8), fg=AxLimCol, text = "+"+str(int(J3NegAngLim)))
-  J3NlimLab.place(x=825, y=10)
+  J3NlimLab.place(x=770, y=10)
   J4PlimLab = Label(tab1, font=("Arial", 8), fg=AxLimCol, text = "+"+str(int(J4PosAngLim)))
-  J4PlimLab.place(x=960, y=10)
+  J4PlimLab.place(x=905, y=10)
   J4NlimLab = Label(tab1, font=("Arial", 8), fg=AxLimCol, text = str(int(J4NegAngLim)))
-  J4NlimLab.place(x=905, y=10)
+  J4NlimLab.place(x=850, y=10)
   J5PlimLab = Label(tab1, font=("Arial", 8), fg=AxLimCol, text = "+"+str(int(J5PosAngLim)))
-  J5PlimLab.place(x=1050, y=10)
+  J5PlimLab.place(x=995, y=10)
   J5NlimLab = Label(tab1, font=("Arial", 8), fg=AxLimCol, text = str(int(J5NegAngLim)))
-  J5NlimLab.place(x=995, y=10)
+  J5NlimLab.place(x=940, y=10)
   J6PlimLab = Label(tab1, font=("Arial", 8), fg=AxLimCol, text = "+"+str(int(J6PosAngLim)))
-  J6PlimLab.place(x=1140, y=10)
+  J6PlimLab.place(x=1085, y=10)
   J6NlimLab = Label(tab1, font=("Arial", 8), fg=AxLimCol, text = str(int(J6NegAngLim)))
-  J6NlimLab.place(x=1085, y=10)
+  J6NlimLab.place(x=1030, y=10)
   DHr1 = float(DHr1EntryField.get())
   DHr2 = float(DHr2EntryField.get())
   DHr3 = float(DHr3EntryField.get())
@@ -1400,7 +1403,7 @@ def SaveAndApplyCalibration():
   J3caldir = CalDir[2:-3]
   J4caldir = CalDir[3:-2]
   J5caldir = CalDir[4:-1]
-  J6caldir = CalDir[5:] 
+  J6caldir = CalDir[5:]
   MotDir = MotDirEntryField.get()
   J1motdir = MotDir[:-5]
   J2motdir = MotDir[1:-4]
@@ -1431,7 +1434,7 @@ def DisplaySteps():
   J3stepsLab['text'] = str(J3StepCur)
   J4stepsLab['text'] = str(J4StepCur)
   J5stepsLab['text'] = str(J5StepCur)
-  J6stepsLab['text'] = str(J6StepCur) 
+  J6stepsLab['text'] = str(J6StepCur)
 
 
 
@@ -1454,10 +1457,10 @@ def J1jogNeg():
     J1jogSteps = J1Degs
     J1Degs = J1Degs*J1DegPerStep
   if (J1Degs <= -(J1NegAngLim - J1AngCur)):
-    ser.write("MJA"+J1motdir+str(J1jogSteps)+"S"+Speed+"G"+ACCdur+"H"+ACCspd+"I"+DECdur+"K"+DECspd+"\n")    
+    ser.write("MJA"+J1motdir+str(J1jogSteps)+"S"+Speed+"G"+ACCdur+"H"+ACCspd+"I"+DECdur+"K"+DECspd+"\n")
     ser.flushInput()
     time.sleep(.2)
-    ser.read()  
+    ser.read()
     J1StepCur = J1StepCur - int(J1jogSteps)
     J1AngCur = round(J1NegAngLim + (J1StepCur * J1DegPerStep),2)
     J1curAngEntryField.delete(0, 'end')
@@ -1468,7 +1471,7 @@ def J1jogNeg():
     almStatusLab.config(text="J1 AXIS LIMIT", bg = "red")
   DisplaySteps()
 
-  
+
 
 
 
@@ -1491,14 +1494,14 @@ def J1jogPos():
     J1Degs = J1Degs*J1DegPerStep
   #calc pos dir output
   if (J1motdir == "0"):
-	J1drivedir = "1"
+    J1drivedir = "1"
   else:
-    J1drivedir = "0"	
+    J1drivedir = "0"
   if (J1Degs <= (J1PosAngLim - J1AngCur)):
-    ser.write("MJA"+J1drivedir+str(J1jogSteps)+"S"+Speed+"G"+ACCdur+"H"+ACCspd+"I"+DECdur+"K"+DECspd+"\n")    
+    ser.write("MJA"+J1drivedir+str(J1jogSteps)+"S"+Speed+"G"+ACCdur+"H"+ACCspd+"I"+DECdur+"K"+DECspd+"\n")
     ser.flushInput()
     time.sleep(.2)
-    ser.read()  
+    ser.read()
     J1StepCur = J1StepCur + int(J1jogSteps)
     J1AngCur = round(J1NegAngLim + (J1StepCur * J1DegPerStep),2)
     J1curAngEntryField.delete(0, 'end')
@@ -1528,10 +1531,10 @@ def J2jogNeg():
     J2jogSteps = J2Degs
     J2Degs = J2Degs*J2DegPerStep
   if (J2Degs <= -(J2NegAngLim - J2AngCur)):
-    ser.write("MJB"+J2motdir+str(J2jogSteps)+"S"+Speed+"G"+ACCdur+"H"+ACCspd+"I"+DECdur+"K"+DECspd+"\n")    
+    ser.write("MJB"+J2motdir+str(J2jogSteps)+"S"+Speed+"G"+ACCdur+"H"+ACCspd+"I"+DECdur+"K"+DECspd+"\n")
     ser.flushInput()
     time.sleep(.2)
-    ser.read()  
+    ser.read()
     J2StepCur = J2StepCur - int(J2jogSteps)
     J2AngCur = round(J2NegAngLim + (J2StepCur * J2DegPerStep),2)
     J2curAngEntryField.delete(0, 'end')
@@ -1542,7 +1545,7 @@ def J2jogNeg():
     almStatusLab.config(text="J2 AXIS LIMIT", bg = "red")
   DisplaySteps()
 
-  
+
 
 
 
@@ -1565,14 +1568,14 @@ def J2jogPos():
     J2Degs = J2Degs*J2DegPerStep
   #calc pos dir output
   if (J2motdir == "0"):
-	J2drivedir = "1"
+    J2drivedir = "1"
   else:
-    J2drivedir = "0"	
+    J2drivedir = "0"
   if (J2Degs <= (J2PosAngLim - J2AngCur)):
-    ser.write("MJB"+J2drivedir+str(J2jogSteps)+"S"+Speed+"G"+ACCdur+"H"+ACCspd+"I"+DECdur+"K"+DECspd+"\n")    
+    ser.write("MJB"+J2drivedir+str(J2jogSteps)+"S"+Speed+"G"+ACCdur+"H"+ACCspd+"I"+DECdur+"K"+DECspd+"\n")
     ser.flushInput()
     time.sleep(.2)
-    ser.read()  
+    ser.read()
     J2StepCur = J2StepCur + int(J2jogSteps)
     J2AngCur = round(J2NegAngLim + (J2StepCur * J2DegPerStep),2)
     J2curAngEntryField.delete(0, 'end')
@@ -1582,8 +1585,8 @@ def J2jogPos():
   else:
     almStatusLab.config(text="J2 AXIS LIMIT", bg = "red")
   DisplaySteps()
-  
-  
+
+
 def J3jogNeg():
   global JogStepsStat
   global J3StepCur
@@ -1602,10 +1605,10 @@ def J3jogNeg():
     J3jogSteps = J3Degs
     J3Degs = J3Degs*J3DegPerStep
   if (J3Degs <= -(J3NegAngLim - J3AngCur)):
-    ser.write("MJC"+J3motdir+str(J3jogSteps)+"S"+Speed+"G"+ACCdur+"H"+ACCspd+"I"+DECdur+"K"+DECspd+"\n")    
+    ser.write("MJC"+J3motdir+str(J3jogSteps)+"S"+Speed+"G"+ACCdur+"H"+ACCspd+"I"+DECdur+"K"+DECspd+"\n")
     ser.flushInput()
     time.sleep(.2)
-    ser.read()  
+    ser.read()
     J3StepCur = J3StepCur - int(J3jogSteps)
     J3AngCur = round(J3NegAngLim + (J3StepCur * J3DegPerStep),2)
     J3curAngEntryField.delete(0, 'end')
@@ -1616,7 +1619,7 @@ def J3jogNeg():
     almStatusLab.config(text="J3 AXIS LIMIT", bg = "red")
   DisplaySteps()
 
-  
+
 
 
 
@@ -1639,14 +1642,14 @@ def J3jogPos():
     J3Degs = J3Degs*J3DegPerStep
   #calc pos dir output
   if (J3motdir == "0"):
-	J3drivedir = "1"
+    J3drivedir = "1"
   else:
-    J3drivedir = "0"	
+    J3drivedir = "0"
   if (J3Degs <= (J3PosAngLim - J3AngCur)):
-    ser.write("MJC"+J3drivedir+str(J3jogSteps)+"S"+Speed+"G"+ACCdur+"H"+ACCspd+"I"+DECdur+"K"+DECspd+"\n")    
+    ser.write("MJC"+J3drivedir+str(J3jogSteps)+"S"+Speed+"G"+ACCdur+"H"+ACCspd+"I"+DECdur+"K"+DECspd+"\n")
     ser.flushInput()
     time.sleep(.2)
-    ser.read()  
+    ser.read()
     J3StepCur = J3StepCur + int(J3jogSteps)
     J3AngCur = round(J3NegAngLim + (J3StepCur * J3DegPerStep),2)
     J3curAngEntryField.delete(0, 'end')
@@ -1676,10 +1679,10 @@ def J4jogNeg():
     J4jogSteps = J4Degs
     J4Degs = J4Degs*J4DegPerStep
   if (J4Degs <= -(J4NegAngLim - J4AngCur)):
-    ser.write("MJD"+J4motdir+str(J4jogSteps)+"S"+Speed+"G"+ACCdur+"H"+ACCspd+"I"+DECdur+"K"+DECspd+"\n")    
+    ser.write("MJD"+J4motdir+str(J4jogSteps)+"S"+Speed+"G"+ACCdur+"H"+ACCspd+"I"+DECdur+"K"+DECspd+"\n")
     ser.flushInput()
     time.sleep(.2)
-    ser.read()  
+    ser.read()
     J4StepCur = J4StepCur - int(J4jogSteps)
     J4AngCur = round(J4NegAngLim + (J4StepCur * J4DegPerStep),2)
     J4curAngEntryField.delete(0, 'end')
@@ -1690,7 +1693,7 @@ def J4jogNeg():
     almStatusLab.config(text="J4 AXIS LIMIT", bg = "red")
   DisplaySteps()
 
-  
+
 
 
 
@@ -1713,14 +1716,14 @@ def J4jogPos():
     J4Degs = J4Degs*J4DegPerStep
   #calc pos dir output
   if (J4motdir == "0"):
-	J4drivedir = "1"
+    J4drivedir = "1"
   else:
-    J4drivedir = "0"	
+    J4drivedir = "0"
   if (J4Degs <= (J4PosAngLim - J4AngCur)):
-    ser.write("MJD"+J4drivedir+str(J4jogSteps)+"S"+Speed+"G"+ACCdur+"H"+ACCspd+"I"+DECdur+"K"+DECspd+"\n")    
+    ser.write("MJD"+J4drivedir+str(J4jogSteps)+"S"+Speed+"G"+ACCdur+"H"+ACCspd+"I"+DECdur+"K"+DECspd+"\n")
     ser.flushInput()
     time.sleep(.2)
-    ser.read()  
+    ser.read()
     J4StepCur = J4StepCur + int(J4jogSteps)
     J4AngCur = round(J4NegAngLim + (J4StepCur * J4DegPerStep),2)
     J4curAngEntryField.delete(0, 'end')
@@ -1729,10 +1732,10 @@ def J4jogPos():
     CalcFwdKin()
   else:
     almStatusLab.config(text="J4 AXIS LIMIT", bg = "red")
-  DisplaySteps()  
-  
-  
-  
+  DisplaySteps()
+
+
+
 def J5jogNeg():
   global JogStepsStat
   global J5StepCur
@@ -1751,10 +1754,10 @@ def J5jogNeg():
     J5jogSteps = J5Degs
     J5Degs = J5Degs*J5DegPerStep
   if (J5Degs <= -(J5NegAngLim - J5AngCur)):
-    ser.write("MJE"+J5motdir+str(J5jogSteps)+"S"+Speed+"G"+ACCdur+"H"+ACCspd+"I"+DECdur+"K"+DECspd+"\n")    
+    ser.write("MJE"+J5motdir+str(J5jogSteps)+"S"+Speed+"G"+ACCdur+"H"+ACCspd+"I"+DECdur+"K"+DECspd+"\n")
     ser.flushInput()
     time.sleep(.2)
-    ser.read()  
+    ser.read()
     J5StepCur = J5StepCur - int(J5jogSteps)
     J5AngCur = round(J5NegAngLim + (J5StepCur * J5DegPerStep),2)
     J5curAngEntryField.delete(0, 'end')
@@ -1765,7 +1768,7 @@ def J5jogNeg():
     almStatusLab.config(text="J5 AXIS LIMIT", bg = "red")
   DisplaySteps()
 
-  
+
 
 
 
@@ -1788,14 +1791,14 @@ def J5jogPos():
     J5Degs = J5Degs*J5DegPerStep
   #calc pos dir output
   if (J5motdir == "0"):
-	J5drivedir = "1"
+    J5drivedir = "1"
   else:
-    J5drivedir = "0"	
+    J5drivedir = "0"
   if (J5Degs <= (J5PosAngLim - J5AngCur)):
-    ser.write("MJE"+J5drivedir+str(J5jogSteps)+"S"+Speed+"G"+ACCdur+"H"+ACCspd+"I"+DECdur+"K"+DECspd+"\n")    
+    ser.write("MJE"+J5drivedir+str(J5jogSteps)+"S"+Speed+"G"+ACCdur+"H"+ACCspd+"I"+DECdur+"K"+DECspd+"\n")
     ser.flushInput()
     time.sleep(.2)
-    ser.read()  
+    ser.read()
     J5StepCur = J5StepCur + int(J5jogSteps)
     J5AngCur = round(J5NegAngLim + (J5StepCur * J5DegPerStep),2)
     J5curAngEntryField.delete(0, 'end')
@@ -1805,8 +1808,8 @@ def J5jogPos():
   else:
     almStatusLab.config(text="J5 AXIS LIMIT", bg = "red")
   DisplaySteps()
-  
-  
+
+
 def J6jogNeg():
   global JogStepsStat
   global J6StepCur
@@ -1825,10 +1828,10 @@ def J6jogNeg():
     J6jogSteps = J6Degs
     J6Degs = J6Degs*J6DegPerStep
   if (J6Degs <= -(J6NegAngLim - J6AngCur)):
-    ser.write("MJF"+J6motdir+str(J6jogSteps)+"S"+Speed+"G"+ACCdur+"H"+ACCspd+"I"+DECdur+"K"+DECspd+"\n")    
+    ser.write("MJF"+J6motdir+str(J6jogSteps)+"S"+Speed+"G"+ACCdur+"H"+ACCspd+"I"+DECdur+"K"+DECspd+"\n")
     ser.flushInput()
     time.sleep(.2)
-    ser.read()  
+    ser.read()
     J6StepCur = J6StepCur - int(J6jogSteps)
     J6AngCur = round(J6NegAngLim + (J6StepCur * J6DegPerStep),2)
     J6curAngEntryField.delete(0, 'end')
@@ -1839,7 +1842,7 @@ def J6jogNeg():
     almStatusLab.config(text="J6 AXIS LIMIT", bg = "red")
   DisplaySteps()
 
-  
+
 
 
 
@@ -1862,14 +1865,14 @@ def J6jogPos():
     J6Degs = J6Degs*J6DegPerStep
   #calc pos dir output
   if (J6motdir == "0"):
-	J6drivedir = "1"
+    J6drivedir = "1"
   else:
-    J6drivedir = "0"	
+    J6drivedir = "0"
   if (J6Degs <= (J6PosAngLim - J6AngCur)):
-    ser.write("MJF"+J6drivedir+str(J6jogSteps)+"S"+Speed+"G"+ACCdur+"H"+ACCspd+"I"+DECdur+"K"+DECspd+"\n")    
+    ser.write("MJF"+J6drivedir+str(J6jogSteps)+"S"+Speed+"G"+ACCdur+"H"+ACCspd+"I"+DECdur+"K"+DECspd+"\n")
     ser.flushInput()
     time.sleep(.2)
-    ser.read()  
+    ser.read()
     J6StepCur = J6StepCur + int(J6jogSteps)
     J6AngCur = round(J6NegAngLim + (J6StepCur * J6DegPerStep),2)
     J6curAngEntryField.delete(0, 'end')
@@ -1891,17 +1894,17 @@ def J6jogPos():
 def XjogNeg():
   almStatusLab.config(text="SYSTEM READY", bg = "grey")
   CX = XcurPos - float(XjogEntryField.get())
-  CY = YcurPos 
+  CY = YcurPos
   CZ = ZcurPos
   CRx = RxcurPos
   CRy = RycurPos
   CRz = RzcurPos
   TCX = 0
-  TCY = 0 
+  TCY = 0
   TCZ = 0
   TCRx = 0
   TCRy = 0
-  TCRz = 0 
+  TCRz = 0
   Track = float(TrackcurEntryField.get())
   newSpeed = speedEntryField.get()
   ACCdur = ACCdurField.get()
@@ -1913,18 +1916,18 @@ def XjogNeg():
 
 def YjogNeg():
   almStatusLab.config(text="SYSTEM READY", bg = "grey")
-  CX = XcurPos 
+  CX = XcurPos
   CY = YcurPos - float(YjogEntryField.get())
   CZ = ZcurPos
   CRx = RxcurPos
   CRy = RycurPos
   CRz = RzcurPos
   TCX = 0
-  TCY = 0 
+  TCY = 0
   TCZ = 0
   TCRx = 0
   TCRy = 0
-  TCRz = 0 
+  TCRz = 0
   Track = float(TrackcurEntryField.get())
   newSpeed = speedEntryField.get()
   ACCdur = ACCdurField.get()
@@ -1936,19 +1939,19 @@ def YjogNeg():
 
 def ZjogNeg():
   almStatusLab.config(text="SYSTEM READY", bg = "grey")
-  CX = XcurPos 
+  CX = XcurPos
   CY = YcurPos
   CZ = ZcurPos - float(ZjogEntryField.get())
   CRx = RxcurPos
   CRy = RycurPos
   CRz = RzcurPos
   TCX = 0
-  TCY = 0 
+  TCY = 0
   TCZ = 0
   TCRx = 0
   TCRy = 0
   TCRz = 0
-  Track = float(TrackcurEntryField.get())  
+  Track = float(TrackcurEntryField.get())
   newSpeed = speedEntryField.get()
   ACCdur = ACCdurField.get()
   ACCspd = ACCspeedField.get()
@@ -1958,19 +1961,19 @@ def ZjogNeg():
 
 def RxjogNeg():
   almStatusLab.config(text="SYSTEM READY", bg = "grey")
-  CX = XcurPos 
+  CX = XcurPos
   CY = YcurPos
   CZ = ZcurPos
   CRx = RxcurPos - float(RxjogEntryField.get())
   CRy = RycurPos
   CRz = RzcurPos
   TCX = 0
-  TCY = 0 
+  TCY = 0
   TCZ = 0
   TCRx = 0
   TCRy = 0
   TCRz = 0
-  Track = float(TrackcurEntryField.get())  
+  Track = float(TrackcurEntryField.get())
   newSpeed = speedEntryField.get()
   ACCdur = ACCdurField.get()
   ACCspd = ACCspeedField.get()
@@ -1980,19 +1983,19 @@ def RxjogNeg():
 
 def RyjogNeg():
   almStatusLab.config(text="SYSTEM READY", bg = "grey")
-  CX = XcurPos 
+  CX = XcurPos
   CY = YcurPos
   CZ = ZcurPos
   CRx = RxcurPos
   CRy = RycurPos - float(RyjogEntryField.get())
   CRz = RzcurPos
   TCX = 0
-  TCY = 0 
+  TCY = 0
   TCZ = 0
   TCRx = 0
   TCRy = 0
   TCRz = 0
-  Track = float(TrackcurEntryField.get())  
+  Track = float(TrackcurEntryField.get())
   newSpeed = speedEntryField.get()
   ACCdur = ACCdurField.get()
   ACCspd = ACCspeedField.get()
@@ -2002,19 +2005,19 @@ def RyjogNeg():
 
 def RzjogNeg():
   almStatusLab.config(text="SYSTEM READY", bg = "grey")
-  CX = XcurPos 
+  CX = XcurPos
   CY = YcurPos
   CZ = ZcurPos
   CRx = RxcurPos
   CRy = RycurPos
   CRz = RzcurPos - float(RzjogEntryField.get())
   TCX = 0
-  TCY = 0 
+  TCY = 0
   TCZ = 0
   TCRx = 0
   TCRy = 0
   TCRz = 0
-  Track = float(TrackcurEntryField.get())  
+  Track = float(TrackcurEntryField.get())
   newSpeed = speedEntryField.get()
   ACCdur = ACCdurField.get()
   ACCspd = ACCspeedField.get()
@@ -2032,12 +2035,12 @@ def XjogPos():
   CRy = RycurPos
   CRz = RzcurPos
   TCX = 0
-  TCY = 0 
+  TCY = 0
   TCZ = 0
   TCRx = 0
   TCRy = 0
   TCRz = 0
-  Track = float(TrackcurEntryField.get())  
+  Track = float(TrackcurEntryField.get())
   newSpeed = speedEntryField.get()
   ACCdur = ACCdurField.get()
   ACCspd = ACCspeedField.get()
@@ -2055,17 +2058,17 @@ def YjogPos():
   CRy = RycurPos
   CRz = RzcurPos
   TCX = 0
-  TCY = 0 
+  TCY = 0
   TCZ = 0
   TCRx = 0
   TCRy = 0
   TCRz = 0
-  Track = float(TrackcurEntryField.get())  
+  Track = float(TrackcurEntryField.get())
   newSpeed = speedEntryField.get()
   ACCdur = ACCdurField.get()
   ACCspd = ACCspeedField.get()
   DECdur = DECdurField.get()
-  DECspd = DECspeedField.get()  
+  DECspd = DECspeedField.get()
   MoveXYZ(CX,CY,CZ,CRx,CRy,CRz,newSpeed,ACCdur,ACCspd,DECdur,DECspd,WC,TCX,TCY,TCZ,TCRx,TCRy,TCRz,Track)
 
 
@@ -2078,7 +2081,7 @@ def ZjogPos():
   CRy = RycurPos
   CRz = RzcurPos
   TCX = 0
-  TCY = 0 
+  TCY = 0
   TCZ = 0
   TCRx = 0
   TCRy = 0
@@ -2088,7 +2091,7 @@ def ZjogPos():
   ACCdur = ACCdurField.get()
   ACCspd = ACCspeedField.get()
   DECdur = DECdurField.get()
-  DECspd = DECspeedField.get()  
+  DECspd = DECspeedField.get()
   MoveXYZ(CX,CY,CZ,CRx,CRy,CRz,newSpeed,ACCdur,ACCspd,DECdur,DECspd,WC,TCX,TCY,TCZ,TCRx,TCRy,TCRz,Track)
 
 
@@ -2101,17 +2104,17 @@ def RxjogPos():
   CRy = RycurPos
   CRz = RzcurPos
   TCX = 0
-  TCY = 0 
+  TCY = 0
   TCZ = 0
   TCRx = 0
   TCRy = 0
   TCRz = 0
-  Track = float(TrackcurEntryField.get())  
+  Track = float(TrackcurEntryField.get())
   newSpeed = speedEntryField.get()
   ACCdur = ACCdurField.get()
   ACCspd = ACCspeedField.get()
   DECdur = DECdurField.get()
-  DECspd = DECspeedField.get()  
+  DECspd = DECspeedField.get()
   MoveXYZ(CX,CY,CZ,CRx,CRy,CRz,newSpeed,ACCdur,ACCspd,DECdur,DECspd,WC,TCX,TCY,TCZ,TCRx,TCRy,TCRz,Track)
 
 def RyjogPos():
@@ -2123,17 +2126,17 @@ def RyjogPos():
   CRy = RycurPos + float(RyjogEntryField.get())
   CRz = RzcurPos
   TCX = 0
-  TCY = 0 
+  TCY = 0
   TCZ = 0
   TCRx = 0
   TCRy = 0
   TCRz = 0
-  Track = float(TrackcurEntryField.get())  
+  Track = float(TrackcurEntryField.get())
   newSpeed = speedEntryField.get()
   ACCdur = ACCdurField.get()
   ACCspd = ACCspeedField.get()
   DECdur = DECdurField.get()
-  DECspd = DECspeedField.get()  
+  DECspd = DECspeedField.get()
   MoveXYZ(CX,CY,CZ,CRx,CRy,CRz,newSpeed,ACCdur,ACCspd,DECdur,DECspd,WC,TCX,TCY,TCZ,TCRx,TCRy,TCRz,Track)
 
 def RzjogPos():
@@ -2145,29 +2148,29 @@ def RzjogPos():
   CRy = RycurPos
   CRz = RzcurPos + float(RzjogEntryField.get())
   TCX = 0
-  TCY = 0 
+  TCY = 0
   TCZ = 0
   TCRx = 0
   TCRy = 0
   TCRz = 0
-  Track = float(TrackcurEntryField.get())  
+  Track = float(TrackcurEntryField.get())
   newSpeed = speedEntryField.get()
   ACCdur = ACCdurField.get()
   ACCspd = ACCspeedField.get()
   DECdur = DECdurField.get()
-  DECspd = DECspeedField.get()  
+  DECspd = DECspeedField.get()
   MoveXYZ(CX,CY,CZ,CRx,CRy,CRz,newSpeed,ACCdur,ACCspd,DECdur,DECspd,WC,TCX,TCY,TCZ,TCRx,TCRy,TCRz,Track)
 
-  
-  
 
-  
-  
-  
+
+
+
+
+
 def TrackjogNeg():
   global TrackcurPos
   global TrackLength
-  global TrackStepLim  
+  global TrackStepLim
   almStatusLab.config(text="SYSTEM READY", bg = "grey")
   CT = float(TrackjogEntryField.get())
   Speed = speedEntryField.get()
@@ -2180,22 +2183,22 @@ def TrackjogNeg():
   else:
     TrackSteps = str(int((TrackStepLim/TrackLength)*CT))
   if (TrackcurPos - (float(TrackSteps) * (TrackLength/TrackStepLim)) >= 0):
-    ser.write("MJT0"+TrackSteps+"S"+Speed+"G"+ACCdur+"H"+ACCspd+"I"+DECdur+"K"+DECspd+"\n")    
+    ser.write("MJT0"+TrackSteps+"S"+Speed+"G"+ACCdur+"H"+ACCspd+"I"+DECdur+"K"+DECspd+"\n")
     ser.flushInput()
     time.sleep(.2)
-    ser.read()  	
+    ser.read()
     TrackcurPos = TrackcurPos - (float(TrackSteps) * (TrackLength/TrackStepLim))
-    TrackcurEntryField.delete(0, 'end')  
+    TrackcurEntryField.delete(0, 'end')
     TrackcurEntryField.insert(0,str(TrackcurPos))
     savePosData()
   else:
     almStatusLab.config(text="TRACK NEG TRAVEL LIMIT", bg = "red")
 
-  
+
 def TrackjogPos():
   global TrackcurPos
   global TrackLength
-  global TrackStepLim  
+  global TrackStepLim
   almStatusLab.config(text="SYSTEM READY", bg = "grey")
   CT = float(TrackjogEntryField.get())
   Speed = speedEntryField.get()
@@ -2208,42 +2211,42 @@ def TrackjogPos():
   else:
     TrackSteps = str(int((TrackStepLim/TrackLength)*CT))
   if (TrackcurPos + (float(TrackSteps) * (TrackLength/TrackStepLim)) <= TrackLength):
-    ser.write("MJT1"+TrackSteps+"S"+Speed+"G"+ACCdur+"H"+ACCspd+"I"+DECdur+"K"+DECspd+"\n")    
+    ser.write("MJT1"+TrackSteps+"S"+Speed+"G"+ACCdur+"H"+ACCspd+"I"+DECdur+"K"+DECspd+"\n")
     ser.flushInput()
     time.sleep(.2)
     ser.read()
     TrackcurPos = TrackcurPos + (float(TrackSteps) * (TrackLength/TrackStepLim))
-    TrackcurEntryField.delete(0, 'end')  
+    TrackcurEntryField.delete(0, 'end')
     TrackcurEntryField.insert(0,str(TrackcurPos))
     savePosData()
   else:
-    almStatusLab.config(text="TRACK POS TRAVEL LIMIT", bg = "red") 
-  
+    almStatusLab.config(text="TRACK POS TRAVEL LIMIT", bg = "red")
+
 def CalTrackPos():
-  global TrackcurPos  
-  TrackcurPos = 0 
-  TrackcurEntryField.delete(0, 'end')  
+  global TrackcurPos
+  TrackcurPos = 0
+  TrackcurEntryField.delete(0, 'end')
   TrackcurEntryField.insert(0,str(TrackcurPos))
-  savePosData() 
-  
-  
-  
-  
+  savePosData()
+
+
+
+
 def TXjogNeg():
   almStatusLab.config(text="SYSTEM READY", bg = "grey")
   CX = XcurPos
-  CY = YcurPos 
+  CY = YcurPos
   CZ = ZcurPos
   CRx = RxcurPos
   CRy = RycurPos
   CRz = RzcurPos
   TCX = 0 - float(TXjogEntryField.get())
-  TCY = 0 
+  TCY = 0
   TCZ = 0
   TCRx = 0
   TCRy = 0
   TCRz = 0
-  Track = float(TrackcurEntryField.get())  
+  Track = float(TrackcurEntryField.get())
   newSpeed = speedEntryField.get()
   ACCdur = ACCdurField.get()
   ACCspd = ACCspeedField.get()
@@ -2254,14 +2257,14 @@ def TXjogNeg():
 
 def TYjogNeg():
   almStatusLab.config(text="SYSTEM READY", bg = "grey")
-  CX = XcurPos 
+  CX = XcurPos
   CY = YcurPos
   CZ = ZcurPos
   CRx = RxcurPos
   CRy = RycurPos
   CRz = RzcurPos
   TCX = 0
-  TCY = 0 - float(TYjogEntryField.get()) 
+  TCY = 0 - float(TYjogEntryField.get())
   TCZ = 0
   TCRx = 0
   TCRy = 0
@@ -2277,14 +2280,14 @@ def TYjogNeg():
 
 def TZjogNeg():
   almStatusLab.config(text="SYSTEM READY", bg = "grey")
-  CX = XcurPos 
+  CX = XcurPos
   CY = YcurPos
   CZ = ZcurPos
   CRx = RxcurPos
   CRy = RycurPos
   CRz = RzcurPos
   TCX = 0
-  TCY = 0 
+  TCY = 0
   TCZ = 0 - float(TZjogEntryField.get())
   TCRx = 0
   TCRy = 0
@@ -2299,14 +2302,14 @@ def TZjogNeg():
 
 def TRxjogNeg():
   almStatusLab.config(text="SYSTEM READY", bg = "grey")
-  CX = XcurPos 
+  CX = XcurPos
   CY = YcurPos
   CZ = ZcurPos
   CRx = RxcurPos
   CRy = RycurPos
   CRz = RzcurPos
   TCX = 0
-  TCY = 0 
+  TCY = 0
   TCZ = 0
   TCRx = 0 - float(TRxjogEntryField.get())
   TCRy = 0
@@ -2321,14 +2324,14 @@ def TRxjogNeg():
 
 def TRyjogNeg():
   almStatusLab.config(text="SYSTEM READY", bg = "grey")
-  CX = XcurPos 
+  CX = XcurPos
   CY = YcurPos
   CZ = ZcurPos
   CRx = RxcurPos
   CRy = RycurPos
   CRz = RzcurPos
   TCX = 0
-  TCY = 0 
+  TCY = 0
   TCZ = 0
   TCRx = 0
   TCRy = 0 - float(TRyjogEntryField.get())
@@ -2343,14 +2346,14 @@ def TRyjogNeg():
 
 def TRzjogNeg():
   almStatusLab.config(text="SYSTEM READY", bg = "grey")
-  CX = XcurPos 
+  CX = XcurPos
   CY = YcurPos
   CZ = ZcurPos
   CRx = RxcurPos
   CRy = RycurPos
   CRz = RzcurPos
   TCX = 0
-  TCY = 0 
+  TCY = 0
   TCZ = 0
   TCRx = 0
   TCRy = 0
@@ -2373,7 +2376,7 @@ def TXjogPos():
   CRy = RycurPos
   CRz = RzcurPos
   TCX = 0 + float(TXjogEntryField.get())
-  TCY = 0 
+  TCY = 0
   TCZ = 0
   TCRx = 0
   TCRy = 0
@@ -2396,7 +2399,7 @@ def TYjogPos():
   CRy = RycurPos
   CRz = RzcurPos
   TCX = 0
-  TCY = 0 + float(TYjogEntryField.get()) 
+  TCY = 0 + float(TYjogEntryField.get())
   TCZ = 0
   TCRx = 0
   TCRy = 0
@@ -2406,7 +2409,7 @@ def TYjogPos():
   ACCdur = ACCdurField.get()
   ACCspd = ACCspeedField.get()
   DECdur = DECdurField.get()
-  DECspd = DECspeedField.get()  
+  DECspd = DECspeedField.get()
   MoveXYZ(CX,CY,CZ,CRx,CRy,CRz,newSpeed,ACCdur,ACCspd,DECdur,DECspd,WC,TCX,TCY,TCZ,TCRx,TCRy,TCRz,Track)
 
 
@@ -2419,7 +2422,7 @@ def TZjogPos():
   CRy = RycurPos
   CRz = RzcurPos
   TCX = 0
-  TCY = 0 
+  TCY = 0
   TCZ = 0 + float(TZjogEntryField.get())
   TCRx = 0
   TCRy = 0
@@ -2429,7 +2432,7 @@ def TZjogPos():
   ACCdur = ACCdurField.get()
   ACCspd = ACCspeedField.get()
   DECdur = DECdurField.get()
-  DECspd = DECspeedField.get()  
+  DECspd = DECspeedField.get()
   MoveXYZ(CX,CY,CZ,CRx,CRy,CRz,newSpeed,ACCdur,ACCspd,DECdur,DECspd,WC,TCX,TCY,TCZ,TCRx,TCRy,TCRz,Track)
 
 
@@ -2442,7 +2445,7 @@ def TRxjogPos():
   CRy = RycurPos
   CRz = RzcurPos
   TCX = 0
-  TCY = 0 
+  TCY = 0
   TCZ = 0
   TCRx = 0 + float(TRxjogEntryField.get())
   TCRy = 0
@@ -2452,7 +2455,7 @@ def TRxjogPos():
   ACCdur = ACCdurField.get()
   ACCspd = ACCspeedField.get()
   DECdur = DECdurField.get()
-  DECspd = DECspeedField.get()  
+  DECspd = DECspeedField.get()
   MoveXYZ(CX,CY,CZ,CRx,CRy,CRz,newSpeed,ACCdur,ACCspd,DECdur,DECspd,WC,TCX,TCY,TCZ,TCRx,TCRy,TCRz,Track)
 
 def TRyjogPos():
@@ -2464,7 +2467,7 @@ def TRyjogPos():
   CRy = RycurPos
   CRz = RzcurPos
   TCX = 0
-  TCY = 0 
+  TCY = 0
   TCZ = 0
   TCRx = 0
   TCRy = 0 + float(TRyjogEntryField.get())
@@ -2474,7 +2477,7 @@ def TRyjogPos():
   ACCdur = ACCdurField.get()
   ACCspd = ACCspeedField.get()
   DECdur = DECdurField.get()
-  DECspd = DECspeedField.get()  
+  DECspd = DECspeedField.get()
   MoveXYZ(CX,CY,CZ,CRx,CRy,CRz,newSpeed,ACCdur,ACCspd,DECdur,DECspd,WC,TCX,TCY,TCZ,TCRx,TCRy,TCRz,Track)
 
 def TRzjogPos():
@@ -2486,7 +2489,7 @@ def TRzjogPos():
   CRy = RycurPos
   CRz = RzcurPos
   TCX = 0
-  TCY = 0 
+  TCY = 0
   TCZ = 0
   TCRx = 0
   TCRy = 0
@@ -2496,11 +2499,11 @@ def TRzjogPos():
   ACCdur = ACCdurField.get()
   ACCspd = ACCspeedField.get()
   DECdur = DECdurField.get()
-  DECspd = DECspeedField.get()  
+  DECspd = DECspeedField.get()
   MoveXYZ(CX,CY,CZ,CRx,CRy,CRz,newSpeed,ACCdur,ACCspd,DECdur,DECspd,WC,TCX,TCY,TCZ,TCRx,TCRy,TCRz,Track)
-  
-  
-  
+
+
+
 
 def teachInsertBelSelected():
   global XcurPos
@@ -2515,7 +2518,7 @@ def teachInsertBelSelected():
     selRow = tab1.progView.curselection()[0]
     selRow += 1
   except:
-    print "foo"  
+    print "foo"
   Speed = speedEntryField.get()
   ACCdur = ACCdurField.get()
   ACCspd = ACCspeedField.get()
@@ -2531,54 +2534,54 @@ def teachInsertBelSelected():
   movetype = options.get()
   if(movetype == "OFFS J"):
     movetype = movetype+" [SP:"+str(SavePosEntryField.get())+"]"
-    newPos = movetype + " [*]  X) "+J1AngWrite+"   Y) "+J2AngWrite+"   Z) "+J3AngWrite+"   W) "+J4AngWrite+"   P) "+J5AngWrite+"   R) "+J6AngWrite+"   T) "+TrackPosWrite+"   Speed-"+Speed+" Ad "+ACCdur+" As "+ACCspd+" Dd "+DECdur+" Ds "+DECspd+ " $"+WC              
-    tab1.progView.insert(selRow, newPos) 
+    newPos = movetype + " [*]  X) "+J1AngWrite+"   Y) "+J2AngWrite+"   Z) "+J3AngWrite+"   W) "+J4AngWrite+"   P) "+J5AngWrite+"   R) "+J6AngWrite+"   T) "+TrackPosWrite+"   Speed-"+Speed+" Ad "+ACCdur+" As "+ACCspd+" Dd "+DECdur+" Ds "+DECspd+ " $"+WC
+    tab1.progView.insert(selRow, newPos)
     tab1.progView.selection_clear(0, END)
     tab1.progView.select_set(selRow)
     value=tab1.progView.get(0,END)
-    pickle.dump(value,open(ProgEntryField.get(),"wb"))
+    pickle.dump(value,open("/home/pi/Documents/AR2/RaspberryPi/"+ProgEntryField.get(),"wb"))
   elif(movetype == "Move SP"):
     movetype = movetype+" [SP:"+str(SavePosEntryField.get())+"]"
-    newPos = movetype + " [*]  T) "+TrackPosWrite+"   Speed-"+Speed+" Ad "+ACCdur+" As "+ACCspd+" Dd "+DECdur+" Ds "+DECspd+ " $"+WC              
-    tab1.progView.insert(selRow, newPos) 
+    newPos = movetype + " [*]  T) "+TrackPosWrite+"   Speed-"+Speed+" Ad "+ACCdur+" As "+ACCspd+" Dd "+DECdur+" Ds "+DECspd+ " $"+WC
+    tab1.progView.insert(selRow, newPos)
     tab1.progView.selection_clear(0, END)
     tab1.progView.select_set(selRow)
     value=tab1.progView.get(0,END)
-    pickle.dump(value,open(ProgEntryField.get(),"wb"))
+    pickle.dump(value,open("/home/pi/Documents/AR2/RaspberryPi/"+ProgEntryField.get(),"wb"))
   elif(movetype == "OFFS SP"):
     movetype = movetype+" [SP:"+str(SavePosEntryField.get())+"] offs [*SP:"+str(int(SavePosEntryField.get())+1)+"] "
     newPos = movetype + " [*]  T) "+TrackPosWrite+"   Speed-"+Speed+" Ad "+ACCdur+" As "+ACCspd+" Dd "+DECdur+" Ds "+DECspd+ " $"+WC
-    tab1.progView.insert(selRow, newPos) 
+    tab1.progView.insert(selRow, newPos)
     tab1.progView.selection_clear(0, END)
     tab1.progView.select_set(selRow)
     value=tab1.progView.get(0,END)
-    pickle.dump(value,open(ProgEntryField.get(),"wb"))
+    pickle.dump(value,open("/home/pi/Documents/AR2/RaspberryPi/"+ProgEntryField.get(),"wb"))
   elif(movetype == "Move J"):
-    newPos = movetype + " [*]  X) "+J1AngWrite+"   Y) "+J2AngWrite+"   Z) "+J3AngWrite+"   W) "+J4AngWrite+"   P) "+J5AngWrite+"   R) "+J6AngWrite+"   T) "+TrackPosWrite+"   Speed-"+Speed+" Ad "+ACCdur+" As "+ACCspd+" Dd "+DECdur+" Ds "+DECspd+ " $"+WC              
-    tab1.progView.insert(selRow, newPos) 
+    newPos = movetype + " [*]  X) "+J1AngWrite+"   Y) "+J2AngWrite+"   Z) "+J3AngWrite+"   W) "+J4AngWrite+"   P) "+J5AngWrite+"   R) "+J6AngWrite+"   T) "+TrackPosWrite+"   Speed-"+Speed+" Ad "+ACCdur+" As "+ACCspd+" Dd "+DECdur+" Ds "+DECspd+ " $"+WC
+    tab1.progView.insert(selRow, newPos)
     tab1.progView.selection_clear(0, END)
     tab1.progView.select_set(selRow)
     value=tab1.progView.get(0,END)
-    pickle.dump(value,open(ProgEntryField.get(),"wb"))
+    pickle.dump(value,open("/home/pi/Documents/AR2/RaspberryPi/"+ProgEntryField.get(),"wb"))
   elif(movetype == "Teach SP"):
     SP = str(SavePosEntryField.get())
-    SPE6 = "Store Position "+SP+" Element 6 = "+str(round(RzcurPos,3))         
-    tab1.progView.insert(selRow, SPE6)	
-    SPE5 = "Store Position "+SP+" Element 5 = "+str(round(RycurPos,3))            
+    SPE6 = "Store Position "+SP+" Element 6 = "+str(round(RzcurPos,3))
+    tab1.progView.insert(selRow, SPE6)
+    SPE5 = "Store Position "+SP+" Element 5 = "+str(round(RycurPos,3))
     tab1.progView.insert(selRow, SPE5)
-    SPE4 = "Store Position "+SP+" Element 4 = "+str(round(RxcurPos,3))           
-    tab1.progView.insert(selRow, SPE4)	
-    SPE3 = "Store Position "+SP+" Element 3 = "+str(round(ZcurPos,3))        
-    tab1.progView.insert(selRow, SPE3)	
-    SPE2 = "Store Position "+SP+" Element 2 = "+str(round(YcurPos,3))            
-    tab1.progView.insert(selRow, SPE2)	
-    SPE1 = "Store Position "+SP+" Element 1 = "+str(round(XcurPos,3))         
-    tab1.progView.insert(selRow, SPE1)   	
+    SPE4 = "Store Position "+SP+" Element 4 = "+str(round(RxcurPos,3))
+    tab1.progView.insert(selRow, SPE4)
+    SPE3 = "Store Position "+SP+" Element 3 = "+str(round(ZcurPos,3))
+    tab1.progView.insert(selRow, SPE3)
+    SPE2 = "Store Position "+SP+" Element 2 = "+str(round(YcurPos,3))
+    tab1.progView.insert(selRow, SPE2)
+    SPE1 = "Store Position "+SP+" Element 1 = "+str(round(XcurPos,3))
+    tab1.progView.insert(selRow, SPE1)
     value=tab1.progView.get(0,END)
-    pickle.dump(value,open(ProgEntryField.get(),"wb"))
+    pickle.dump(value,open("/home/pi/Documents/AR2/RaspberryPi/"+ProgEntryField.get(),"wb"))
 
-  
-  
+
+
 
 def teachReplaceSelected():
   global XcurPos
@@ -2605,15 +2608,15 @@ def teachReplaceSelected():
   movetype = options.get()
   if(movetype[:-2]== "OFFS"):
     movetype = movetype+" [SP:"+str(SavePosEntryField.get())+"]"
-  newPos = movetype + " [*]  X) "+J1AngWrite+"   Y) "+J2AngWrite+"   Z) "+J3AngWrite+"   W) "+J4AngWrite+"   P) "+J5AngWrite+"   R) "+J6AngWrite+"   T) "+TrackPosWrite+"   Speed-"+Speed+" Ad "+ACCdur+" As "+ACCspd+" Dd "+DECdur+" Ds "+DECspd+ " $"+WC              
+  newPos = movetype + " [*]  X) "+J1AngWrite+"   Y) "+J2AngWrite+"   Z) "+J3AngWrite+"   W) "+J4AngWrite+"   P) "+J5AngWrite+"   R) "+J6AngWrite+"   T) "+TrackPosWrite+"   Speed-"+Speed+" Ad "+ACCdur+" As "+ACCspd+" Dd "+DECdur+" Ds "+DECspd+ " $"+WC
   tab1.progView.insert(selRow, newPos)
   selection = tab1.progView.curselection()
-  tab1.progView.delete(selection[0]) 
+  tab1.progView.delete(selection[0])
   tab1.progView.select_set(selRow)
   value=tab1.progView.get(0,END)
-  pickle.dump(value,open(ProgEntryField.get(),"wb"))
+  pickle.dump(value,open("/home/pi/Documents/AR2/RaspberryPi/"+ProgEntryField.get(),"wb"))
 
-  
+
 def teachFineCal():
   global XcurPos
   global YcurPos
@@ -2635,8 +2638,8 @@ def teachFineCal():
   J5AngWrite = str(round(RycurPos,3))
   J6AngWrite = str(round(RzcurPos,3))
   TrackPosWrite = str(round(TrackcurPos,3))
-  newPos = "Move J [*]  X) "+J1AngWrite+"   Y) "+J2AngWrite+"   Z) "+J3AngWrite+"   W) "+J4AngWrite+"   P) "+J5AngWrite+"   R) "+J6AngWrite+"   T) "+TrackPosWrite+"   Speed-"+Speed+" Ad "+ACCdur+" As "+ACCspd+" Dd "+DECdur+" Ds "+DECspd+ " $"+WC              
-  fineCalEntryField.delete(0, 'end')   
+  newPos = "Move J [*]  X) "+J1AngWrite+"   Y) "+J2AngWrite+"   Z) "+J3AngWrite+"   W) "+J4AngWrite+"   P) "+J5AngWrite+"   R) "+J6AngWrite+"   T) "+TrackPosWrite+"   Speed-"+Speed+" Ad "+ACCdur+" As "+ACCspd+" Dd "+DECdur+" Ds "+DECspd+ " $"+WC
+  fineCalEntryField.delete(0, 'end')
   fineCalEntryField.insert(0,str(newPos))
   savePosData()
   almStatusLab.config(text="NEW FINE CALIBRATION POSITION TAUGHT", bg = "blue")
@@ -2644,137 +2647,137 @@ def teachFineCal():
 
 
 def manInsItem():
-  #selRow = curRowEntryField.get() 
+  #selRow = curRowEntryField.get()
   selRow = tab1.progView.curselection()[0]
   selRow = int(selRow)+1
   tab1.progView.insert(selRow, manEntryField.get())
   tab1.progView.selection_clear(0, END)
-  tab1.progView.select_set(selRow) 
+  tab1.progView.select_set(selRow)
   selRow = tab1.progView.curselection()[0]
   curRowEntryField.delete(0, 'end')
   curRowEntryField.insert(0,selRow)
   tab1.progView.itemconfig(selRow, {'fg': 'darkgreen'})
   value=tab1.progView.get(0,END)
-  pickle.dump(value,open(ProgEntryField.get(),"wb"))
-  
-  
+  pickle.dump(value,open("/home/pi/Documents/AR2/RaspberryPi/"+ProgEntryField.get(),"wb"))
+
+
 def manReplItem():
   #selRow = curRowEntryField.get()
   selRow = tab1.progView.curselection()[0]
-  tab1.progView.delete(selRow) 
+  tab1.progView.delete(selRow)
   tab1.progView.insert(selRow, manEntryField.get())
   tab1.progView.selection_clear(0, END)
   tab1.progView.select_set(selRow)
-  tab1.progView.itemconfig(selRow, {'fg': 'darkgreen'})  
+  tab1.progView.itemconfig(selRow, {'fg': 'darkgreen'})
   value=tab1.progView.get(0,END)
-  pickle.dump(value,open(ProgEntryField.get(),"wb"))
+  pickle.dump(value,open("/home/pi/Documents/AR2/RaspberryPi/"+ProgEntryField.get(),"wb"))
 
 
-  
-  
-  
+
+
+
 def waitTime():
   selRow = tab1.progView.curselection()[0]
   selRow += 1
   seconds = waitTimeEntryField.get()
-  newTime = "Wait T - wait time - Seconds-"+seconds               
+  newTime = "Wait T - wait time - Seconds-"+seconds
   tab1.progView.insert(selRow, newTime)
-  tab1.progView.selection_clear(0, END) 
-  tab1.progView.select_set(selRow) 
+  tab1.progView.selection_clear(0, END)
+  tab1.progView.select_set(selRow)
   value=tab1.progView.get(0,END)
-  pickle.dump(value,open(ProgEntryField.get(),"wb"))
+  pickle.dump(value,open("/home/pi/Documents/AR2/RaspberryPi/"+ProgEntryField.get(),"wb"))
 
 
 def waitInputOn():
   selRow = tab1.progView.curselection()[0]
   selRow += 1
   input = waitInputEntryField.get()
-  newInput = "Wait I - wait input ON - Input-"+input              
+  newInput = "Wait I - wait input ON - Input-"+input
   tab1.progView.insert(selRow, newInput)
-  tab1.progView.selection_clear(0, END) 
-  tab1.progView.select_set(selRow) 
+  tab1.progView.selection_clear(0, END)
+  tab1.progView.select_set(selRow)
   value=tab1.progView.get(0,END)
-  pickle.dump(value,open(ProgEntryField.get(),"wb"))
+  pickle.dump(value,open("/home/pi/Documents/AR2/RaspberryPi/"+ProgEntryField.get(),"wb"))
 
 def waitInputOff():
   selRow = tab1.progView.curselection()[0]
   selRow += 1
   input = waitInputOffEntryField.get()
-  newInput = "Wait Off - wait input OFF - Input-"+input              
+  newInput = "Wait Off - wait input OFF - Input-"+input
   tab1.progView.insert(selRow, newInput)
-  tab1.progView.selection_clear(0, END) 
-  tab1.progView.select_set(selRow) 
+  tab1.progView.selection_clear(0, END)
+  tab1.progView.select_set(selRow)
   value=tab1.progView.get(0,END)
-  pickle.dump(value,open(ProgEntryField.get(),"wb"))
+  pickle.dump(value,open("/home/pi/Documents/AR2/RaspberryPi/"+ProgEntryField.get(),"wb"))
 
 def setOutputOn():
   selRow = tab1.progView.curselection()[0]
   selRow += 1
   output = outputOnEntryField.get()
-  newOutput = "Out On - set output ON - Output-"+output              
+  newOutput = "Out On - set output ON - Output-"+output
   tab1.progView.insert(selRow, newOutput)
-  tab1.progView.selection_clear(0, END) 
-  tab1.progView.select_set(selRow) 
+  tab1.progView.selection_clear(0, END)
+  tab1.progView.select_set(selRow)
   value=tab1.progView.get(0,END)
-  pickle.dump(value,open(ProgEntryField.get(),"wb"))
+  pickle.dump(value,open("/home/pi/Documents/AR2/RaspberryPi/"+ProgEntryField.get(),"wb"))
 
 def setOutputOff():
   selRow = tab1.progView.curselection()[0]
   selRow += 1
   output = outputOffEntryField.get()
-  newOutput = "Out Off - set output OFF - Output-"+output              
+  newOutput = "Out Off - set output OFF - Output-"+output
   tab1.progView.insert(selRow, newOutput)
-  tab1.progView.selection_clear(0, END) 
-  tab1.progView.select_set(selRow) 
+  tab1.progView.selection_clear(0, END)
+  tab1.progView.select_set(selRow)
   value=tab1.progView.get(0,END)
-  pickle.dump(value,open(ProgEntryField.get(),"wb"))
+  pickle.dump(value,open("/home/pi/Documents/AR2/RaspberryPi/"+ProgEntryField.get(),"wb"))
 
 def tabNumber():
   selRow = tab1.progView.curselection()[0]
   selRow += 1
   tabNum = tabNumEntryField.get()
-  tabins = "Tab Number "+tabNum              
-  tab1.progView.insert(selRow, tabins) 
+  tabins = "Tab Number "+tabNum
+  tab1.progView.insert(selRow, tabins)
   value=tab1.progView.get(0,END)
-  tab1.progView.selection_clear(0, END) 
+  tab1.progView.selection_clear(0, END)
   tab1.progView.select_set(selRow)
-  pickle.dump(value,open(ProgEntryField.get(),"wb"))
+  pickle.dump(value,open("/home/pi/Documents/AR2/RaspberryPi/"+ProgEntryField.get(),"wb"))
   tabNumEntryField.delete(0, 'end')
 
 def jumpTab():
   selRow = tab1.progView.curselection()[0]
   selRow += 1
   tabNum = jumpTabEntryField.get()
-  tabjmp = "Jump Tab-"+tabNum              
-  tab1.progView.insert(selRow, tabjmp) 
+  tabjmp = "Jump Tab-"+tabNum
+  tab1.progView.insert(selRow, tabjmp)
   value=tab1.progView.get(0,END)
   tab1.progView.selection_clear(0, END)
   tab1.progView.select_set(selRow)
-  pickle.dump(value,open(ProgEntryField.get(),"wb"))
+  pickle.dump(value,open("/home/pi/Documents/AR2/RaspberryPi/"+ProgEntryField.get(),"wb"))
   tabNumEntryField.delete(0, 'end')
 
-  
+
 def getvision():
   selRow = tab1.progView.curselection()[0]
   selRow += 1
   value = "Get Vision"
-  tab1.progView.insert(selRow, value) 
+  tab1.progView.insert(selRow, value)
   value=tab1.progView.get(0,END)
   tab1.progView.selection_clear(0, END)
   tab1.progView.select_set(selRow)
-  pickle.dump(value,open(ProgEntryField.get(),"wb"))
-  
+  pickle.dump(value,open("/home/pi/Documents/AR2/RaspberryPi/"+ProgEntryField.get(),"wb"))
+
 def IfOnjumpTab():
   selRow = tab1.progView.curselection()[0]
   selRow += 1
   inpNum = IfOnjumpInputTabEntryField.get()
   tabNum = IfOnjumpNumberTabEntryField.get()
-  tabjmp = "If On Jump - Input-"+inpNum+" Jump to Tab-"+tabNum             
-  tab1.progView.insert(selRow, tabjmp)   
+  tabjmp = "If On Jump - Input-"+inpNum+" Jump to Tab-"+tabNum
+  tab1.progView.insert(selRow, tabjmp)
   value=tab1.progView.get(0,END)
-  tab1.progView.selection_clear(0, END) 
+  tab1.progView.selection_clear(0, END)
   tab1.progView.select_set(selRow)
-  pickle.dump(value,open(ProgEntryField.get(),"wb"))
+  pickle.dump(value,open("/home/pi/Documents/AR2/RaspberryPi/"+ProgEntryField.get(),"wb"))
   tabNumEntryField.delete(0, 'end')
 
 def IfOffjumpTab():
@@ -2782,12 +2785,12 @@ def IfOffjumpTab():
   selRow += 1
   inpNum = IfOffjumpInputTabEntryField.get()
   tabNum = IfOffjumpNumberTabEntryField.get()
-  tabjmp = "If Off Jump - Input-"+inpNum+" Jump to Tab-"+tabNum             
-  tab1.progView.insert(selRow, tabjmp) 
+  tabjmp = "If Off Jump - Input-"+inpNum+" Jump to Tab-"+tabNum
+  tab1.progView.insert(selRow, tabjmp)
   value=tab1.progView.get(0,END)
-  tab1.progView.selection_clear(0, END) 
+  tab1.progView.selection_clear(0, END)
   tab1.progView.select_set(selRow)
-  pickle.dump(value,open(ProgEntryField.get(),"wb"))
+  pickle.dump(value,open("/home/pi/Documents/AR2/RaspberryPi/"+ProgEntryField.get(),"wb"))
   tabNumEntryField.delete(0, 'end')
 
 
@@ -2796,58 +2799,58 @@ def Servo():
   selRow += 1
   servoNum = servoNumEntryField.get()
   servoPos = servoPosEntryField.get()
-  servoins = "Servo number "+servoNum+" to position: "+servoPos              
+  servoins = "Servo number "+servoNum+" to position: "+servoPos
   tab1.progView.insert(selRow, servoins)
-  tab1.progView.selection_clear(0, END) 
-  tab1.progView.select_set(selRow) 
+  tab1.progView.selection_clear(0, END)
+  tab1.progView.select_set(selRow)
   value=tab1.progView.get(0,END)
-  pickle.dump(value,open(ProgEntryField.get(),"wb"))
+  pickle.dump(value,open("/home/pi/Documents/AR2/RaspberryPi/"+ProgEntryField.get(),"wb"))
 
 def loadProg():
   progframe=Frame(tab1)
-  progframe.place(x=7,y=174)
+  progframe.place(x=10,y=175)
   #progframe.pack(side=RIGHT, fill=Y)
-  scrollbar = Scrollbar(progframe) 
+  scrollbar = Scrollbar(progframe)
   scrollbar.pack(side=RIGHT, fill=Y)
-  tab1.progView = Listbox(progframe,width=84,height=29, yscrollcommand=scrollbar.set)
+  tab1.progView = Listbox(progframe,width=53,height=25, yscrollcommand=scrollbar.set)
   tab1.progView.bind('<<ListboxSelect>>', progViewselect)
   try:
-    Prog = pickle.load(open(ProgEntryField.get(),"rb"))
+    Prog = pickle.load(open("/home/pi/Documents/AR2/RaspberryPi/"+ProgEntryField.get(),"rb"))
   except:
     try:
       Prog = ['##BEGINNING OF PROGRAM##','Tab Number 1']
-      pickle.dump(Prog,open(ProgEntryField.get(),"wb"))    
+      pickle.dump(Prog,open("/home/pi/Documents/AR2/RaspberryPi/"+ProgEntryField.get(),"wb"))
     except:
       Prog = ['##BEGINNING OF PROGRAM##','Tab Number 1']
       pickle.dump(Prog,open("new","wb"))
       ProgEntryField.insert(0,"new")
   time.sleep(.2)
   for item in Prog:
-    tab1.progView.insert(END,item) 
+    tab1.progView.insert(END,item)
   tab1.progView.pack()
   scrollbar.config(command=tab1.progView.yview)
   savePosData()
 
-def insertCallProg():  
+def insertCallProg():
   selRow = tab1.progView.curselection()[0]
   selRow += 1
   newProg = changeProgEntryField.get()
-  changeProg = "Call Program - "+newProg            
+  changeProg = "Call Program - "+newProg
   tab1.progView.insert(selRow, changeProg)
-  tab1.progView.selection_clear(0, END) 
-  tab1.progView.select_set(selRow)  
+  tab1.progView.selection_clear(0, END)
+  tab1.progView.select_set(selRow)
   value=tab1.progView.get(0,END)
-  pickle.dump(value,open(ProgEntryField.get(),"wb"))
+  pickle.dump(value,open("/home/pi/Documents/AR2/RaspberryPi/"+ProgEntryField.get(),"wb"))
 
-def insertReturn():  
+def insertReturn():
   selRow = tab1.progView.curselection()[0]
   selRow += 1
-  value = "Return"           
+  value = "Return"
   tab1.progView.insert(selRow, value)
-  tab1.progView.selection_clear(0, END) 
-  tab1.progView.select_set(selRow)  
+  tab1.progView.selection_clear(0, END)
+  tab1.progView.select_set(selRow)
   value=tab1.progView.get(0,END)
-  pickle.dump(value,open(ProgEntryField.get(),"wb"))
+  pickle.dump(value,open("/home/pi/Documents/AR2/RaspberryPi/"+ProgEntryField.get(),"wb"))
 
 def IfRegjumpTab():
   selRow = tab1.progView.curselection()[0]
@@ -2855,12 +2858,12 @@ def IfRegjumpTab():
   regNum = regNumJmpEntryField.get()
   regEqNum = regEqJmpEntryField.get()
   tabNum = regTabJmpEntryField.get()
-  tabjmp = "If Register "+regNum+" = "+regEqNum+" Jump to Tab "+ tabNum            
-  tab1.progView.insert(selRow, tabjmp)   
+  tabjmp = "If Register "+regNum+" = "+regEqNum+" Jump to Tab "+ tabNum
+  tab1.progView.insert(selRow, tabjmp)
   value=tab1.progView.get(0,END)
-  tab1.progView.selection_clear(0, END) 
+  tab1.progView.selection_clear(0, END)
   tab1.progView.select_set(selRow)
-  pickle.dump(value,open(ProgEntryField.get(),"wb"))
+  pickle.dump(value,open("/home/pi/Documents/AR2/RaspberryPi/"+ProgEntryField.get(),"wb"))
   tabNumEntryField.delete(0, 'end')
 
 
@@ -2868,49 +2871,49 @@ def IfRegjumpTab():
 
 
 
-def insertRegister():  
+def insertRegister():
   selRow = tab1.progView.curselection()[0]
   selRow += 1
   regNum = regNumEntryField.get()
   regCmd = regEqEntryField.get()
-  regIns = "Register "+regNum+" = "+regCmd             
-  tab1.progView.insert(selRow, regIns)   
+  regIns = "Register "+regNum+" = "+regCmd
+  tab1.progView.insert(selRow, regIns)
   value=tab1.progView.get(0,END)
-  tab1.progView.selection_clear(0, END) 
+  tab1.progView.selection_clear(0, END)
   tab1.progView.select_set(selRow)
-  pickle.dump(value,open(ProgEntryField.get(),"wb"))
+  pickle.dump(value,open("/home/pi/Documents/AR2/RaspberryPi/"+ProgEntryField.get(),"wb"))
   tabNumEntryField.delete(0, 'end')
-  
-  
+
+
 def storPos():
   selRow = tab1.progView.curselection()[0]
   selRow += 1
   regNum = storPosNumEntryField.get()
   regElmnt = storPosElEntryField.get()
   regCmd = storPosValEntryField.get()
-  regIns = "Store Position "+regNum+" Element "+regElmnt+" = "+regCmd             
-  tab1.progView.insert(selRow, regIns)   
+  regIns = "Store Position "+regNum+" Element "+regElmnt+" = "+regCmd
+  tab1.progView.insert(selRow, regIns)
   value=tab1.progView.get(0,END)
-  tab1.progView.selection_clear(0, END) 
+  tab1.progView.selection_clear(0, END)
   tab1.progView.select_set(selRow)
-  pickle.dump(value,open(ProgEntryField.get(),"wb"))
+  pickle.dump(value,open("/home/pi/Documents/AR2/RaspberryPi/"+ProgEntryField.get(),"wb"))
   tabNumEntryField.delete(0, 'end')
-  
-  
-  
-  
-  
-  
 
-def insCalibrate():  
+
+
+
+
+
+
+def insCalibrate():
   selRow = tab1.progView.curselection()[0]
   selRow += 1
-  insCal = "Calibrate Robot"          
-  tab1.progView.insert(selRow, insCal)   
+  insCal = "Calibrate Robot"
+  tab1.progView.insert(selRow, insCal)
   value=tab1.progView.get(0,END)
-  tab1.progView.selection_clear(0, END) 
+  tab1.progView.selection_clear(0, END)
   tab1.progView.select_set(selRow)
-  pickle.dump(value,open(ProgEntryField.get(),"wb"))
+  pickle.dump(value,open("/home/pi/Documents/AR2/RaspberryPi/"+ProgEntryField.get(),"wb"))
   tabNumEntryField.delete(0, 'end')
 
 
@@ -2921,7 +2924,7 @@ def progViewselect(e):
   selRow = tab1.progView.curselection()[0]
   curRowEntryField.delete(0, 'end')
   curRowEntryField.insert(0,selRow)
- 
+
 
 
 
@@ -2932,13 +2935,13 @@ def getSel():
   data = map(int, tab1.progView.curselection())
   command=tab1.progView.get(data[0])
   manEntryField.delete(0, 'end')
-  manEntryField.insert(0, command)  
-  
+  manEntryField.insert(0, command)
+
 
 
 
 def Servo0on():
-  savePosData() 
+  savePosData()
   servoPos = servo0onEntryField.get()
   command = "SV0P"+servoPos
   ser.write(command +"\n")
@@ -2948,7 +2951,7 @@ def Servo0on():
 
 
 def Servo0off():
-  savePosData() 
+  savePosData()
   servoPos = servo0offEntryField.get()
   command = "SV0P"+servoPos
   ser.write(command +"\n")
@@ -2958,37 +2961,37 @@ def Servo0off():
 
 
 def Servo1on():
-  savePosData() 
+  savePosData()
   servoPos = servo1onEntryField.get()
   command = "SV1P"+servoPos
   ser.write(command +"\n")
   ser.flushInput()
   time.sleep(.2)
-  ser.read() 
+  ser.read()
 
 
 def Servo1off():
-  savePosData() 
+  savePosData()
   servoPos = servo1offEntryField.get()
   command = "SV1P"+servoPos
   ser.write(command +"\n")
   ser.flushInput()
   time.sleep(.2)
   ser.read()
- 
+
 
 def Servo2on():
-  savePosData() 
+  savePosData()
   servoPos = servo2onEntryField.get()
   command = "SV2P"+servoPos
   ser.write(command +"\n")
   ser.flushInput()
   time.sleep(.2)
-  ser.read() 
+  ser.read()
 
 
 def Servo2off():
-  savePosData() 
+  savePosData()
   servoPos = servo2offEntryField.get()
   command = "SV2P"+servoPos
   ser.write(command +"\n")
@@ -2997,17 +3000,17 @@ def Servo2off():
   ser.read()
 
 def Servo3on():
-  savePosData() 
+  savePosData()
   servoPos = servo3onEntryField.get()
   command = "SV3P"+servoPos
   ser.write(command +"\n")
   ser.flushInput()
   time.sleep(.2)
-  ser.read() 
+  ser.read()
 
 
 def Servo3off():
-  savePosData() 
+  savePosData()
   servoPos = servo3offEntryField.get()
   command = "SV3P"+servoPos
   ser.write(command +"\n")
@@ -3024,7 +3027,7 @@ def DO1on():
   ser.write(command +"\n")
   ser.flushInput()
   time.sleep(.2)
-  ser.read() 
+  ser.read()
 
 
 def DO1off():
@@ -3033,8 +3036,8 @@ def DO1off():
   ser.write(command +"\n")
   ser.flushInput()
   time.sleep(.2)
-  ser.read() 
- 
+  ser.read()
+
 
 def DO2on():
   outputNum = DO2onEntryField.get()
@@ -3043,7 +3046,7 @@ def DO2on():
   ser.flushInput()
   time.sleep(.2)
   ser.read()
- 
+
 
 def DO2off():
   outputNum = DO2offEntryField.get()
@@ -3051,7 +3054,7 @@ def DO2off():
   ser.write(command +"\n")
   ser.flushInput()
   time.sleep(.2)
-  ser.read() 
+  ser.read()
 
 
 def DO3on():
@@ -3060,7 +3063,7 @@ def DO3on():
   ser.write(command +"\n")
   ser.flushInput()
   time.sleep(.2)
-  ser.read() 
+  ser.read()
 
 
 def DO3off():
@@ -3069,8 +3072,8 @@ def DO3off():
   ser.write(command +"\n")
   ser.flushInput()
   time.sleep(.2)
-  ser.read() 
- 
+  ser.read()
+
 
 def DO4on():
   outputNum = DO4onEntryField.get()
@@ -3079,7 +3082,7 @@ def DO4on():
   ser.flushInput()
   time.sleep(.2)
   ser.read()
- 
+
 
 def DO4off():
   outputNum = DO4offEntryField.get()
@@ -3087,7 +3090,7 @@ def DO4off():
   ser.write(command +"\n")
   ser.flushInput()
   time.sleep(.2)
-  ser.read() 
+  ser.read()
 
 
 def DO5on():
@@ -3096,7 +3099,7 @@ def DO5on():
   ser.write(command +"\n")
   ser.flushInput()
   time.sleep(.2)
-  ser.read() 
+  ser.read()
 
 
 def DO5off():
@@ -3105,8 +3108,8 @@ def DO5off():
   ser.write(command +"\n")
   ser.flushInput()
   time.sleep(.2)
-  ser.read() 
- 
+  ser.read()
+
 
 def DO6on():
   outputNum = DO6onEntryField.get()
@@ -3115,7 +3118,7 @@ def DO6on():
   ser.flushInput()
   time.sleep(.2)
   ser.read()
- 
+
 
 def DO6off():
   outputNum = DO6offEntryField.get()
@@ -3123,13 +3126,13 @@ def DO6off():
   ser.write(command +"\n")
   ser.flushInput()
   time.sleep(.2)
-  ser.read() 
+  ser.read()
 
 
 
 
 
-def CalcFwdKin(): 
+def CalcFwdKin():
   global XcurPos
   global YcurPos
   global ZcurPos
@@ -3154,7 +3157,7 @@ def CalcFwdKin():
   if (J5AngCur == 0):
     J5AngCur = .0001
   if (J6AngCur == 0):
-    J6AngCur = .0001  
+    J6AngCur = .0001
   ## Set Wrist Config
   if (J5AngCur > 0):
     WC = "F"
@@ -3193,18 +3196,18 @@ def CalcFwdKin():
   F17 = DHa5
   F18 = DHa6
   ## WORK FRAME INPUT
-  H13 = float(UFxEntryField.get()) 
-  H14 = float(UFyEntryField.get())  
+  H13 = float(UFxEntryField.get())
+  H14 = float(UFyEntryField.get())
   H15 = float(UFzEntryField.get())
-  H16 = float(UFrxEntryField.get()) 
-  H17 = float(UFryEntryField.get()) 
-  H18 = float(UFrzEntryField.get()) 
+  H16 = float(UFrxEntryField.get())
+  H17 = float(UFryEntryField.get())
+  H18 = float(UFrzEntryField.get())
   ## TOOL FRAME INPUT
-  J13 = float(TFxEntryField.get()) 
-  J14 = float(TFyEntryField.get())  
+  J13 = float(TFxEntryField.get())
+  J14 = float(TFyEntryField.get())
   J15 = float(TFzEntryField.get())
-  J16 = float(TFrxEntryField.get()) 
-  J17 = float(TFryEntryField.get()) 
+  J16 = float(TFrxEntryField.get())
+  J17 = float(TFryEntryField.get())
   J18 = float(TFrzEntryField.get())
   ## WORK FRAME TABLE
   B21 = math.cos(math.radians(H18))*math.cos(math.radians(H17))
@@ -3222,7 +3225,7 @@ def CalcFwdKin():
   E21 = H13
   E22 = H14
   E23 = H15
-  E24 = 1 
+  E24 = 1
   ## J1 FRAME
   B27 = math.cos(C13)
   B28 = math.sin(C13)
@@ -3231,11 +3234,11 @@ def CalcFwdKin():
   C27 = -math.sin(C13)*math.cos(D13)
   C28 = math.cos(C13)*math.cos(D13)
   C29 = math.sin(D13)
-  C30 = 0  
+  C30 = 0
   D27 = math.sin(C13)*math.sin(D13)
   D28 = -math.cos(C13)*math.sin(D13)
   D29 = math.cos(D13)
-  D30 = 0 
+  D30 = 0
   E27 = F13*math.cos(C13)
   E28 = F13*math.sin(C13)
   E29 = E13
@@ -3257,7 +3260,7 @@ def CalcFwdKin():
   E34 = F14*math.sin(C14)
   E35 = E14
   E36 = 1
-  ## J3 FRAME 
+  ## J3 FRAME
   B39 = math.cos(C15)
   B40 = math.sin(C15)
   B41 = 0
@@ -3274,7 +3277,7 @@ def CalcFwdKin():
   E40 = F15*math.sin(C15)
   E41 = 0
   E42 = 1
-  ## J4 FRAME 
+  ## J4 FRAME
   B45 = math.cos(C16)
   B46 = math.sin(C16)
   B47 = 0
@@ -3291,7 +3294,7 @@ def CalcFwdKin():
   E46 = F16*math.sin(C16)
   E47 = E16
   E48 = 1
-  ## J5 FRAME 
+  ## J5 FRAME
   B51 = math.cos(C17)
   B52 = math.sin(C17)
   B53 = 0
@@ -3299,7 +3302,7 @@ def CalcFwdKin():
   C51 = -math.sin(C17)*math.cos(D17)
   C52 = math.cos(C17)*math.cos(D17)
   C53 = math.sin(D17)
-  C54 = 0 
+  C54 = 0
   D51 = math.sin(C17)*math.sin(D17)
   D52 = -math.cos(C17)*math.sin(D17)
   D53 = math.cos(D17)
@@ -3377,38 +3380,38 @@ def CalcFwdKin():
   J32 = (G26*E33)+(H26*E34)+(I26*E35)+(J26*E36)
   J33 = (G27*E33)+(H27*E34)+(I27*E35)+(J27*E36)
   ## (WF*J1*J2)*J3
-  G36 = (G30*B39)+(H30*B40)+(I30*B41)+(J30*B42) 
-  G37 = (G31*B39)+(H31*B40)+(I31*B41)+(J31*B42)  
-  G38 = (G32*B39)+(H32*B40)+(I32*B41)+(J32*B42)  
-  G39 = (G33*B39)+(H33*B40)+(I33*B41)+(J33*B42)  
-  H36 = (G30*C39)+(H30*C40)+(I30*C41)+(J30*C42)  
-  H37 = (G31*C39)+(H31*C40)+(I31*C41)+(J31*C42)  
-  H38 = (G32*C39)+(H32*C40)+(I32*C41)+(J32*C42)  
-  H39 = (G33*C39)+(H33*C40)+(I33*C41)+(J33*C42)  
-  I36 = (G30*D39)+(H30*D40)+(I30*D41)+(J30*D42)  
-  I37 = (G31*D39)+(H31*D40)+(I31*D41)+(J31*D42)  
-  I38 = (G32*D39)+(H32*D40)+(I32*D41)+(J32*D42)  
-  I39 = (G33*D39)+(H33*D40)+(I33*D41)+(J33*D42)  
-  J36 = (G30*E39)+(H30*E40)+(I30*E41)+(J30*E42)  
-  J37 = (G31*E39)+(H31*E40)+(I31*E41)+(J31*E42)  
-  J38 = (G32*E39)+(H32*E40)+(I32*E41)+(J32*E42)  
+  G36 = (G30*B39)+(H30*B40)+(I30*B41)+(J30*B42)
+  G37 = (G31*B39)+(H31*B40)+(I31*B41)+(J31*B42)
+  G38 = (G32*B39)+(H32*B40)+(I32*B41)+(J32*B42)
+  G39 = (G33*B39)+(H33*B40)+(I33*B41)+(J33*B42)
+  H36 = (G30*C39)+(H30*C40)+(I30*C41)+(J30*C42)
+  H37 = (G31*C39)+(H31*C40)+(I31*C41)+(J31*C42)
+  H38 = (G32*C39)+(H32*C40)+(I32*C41)+(J32*C42)
+  H39 = (G33*C39)+(H33*C40)+(I33*C41)+(J33*C42)
+  I36 = (G30*D39)+(H30*D40)+(I30*D41)+(J30*D42)
+  I37 = (G31*D39)+(H31*D40)+(I31*D41)+(J31*D42)
+  I38 = (G32*D39)+(H32*D40)+(I32*D41)+(J32*D42)
+  I39 = (G33*D39)+(H33*D40)+(I33*D41)+(J33*D42)
+  J36 = (G30*E39)+(H30*E40)+(I30*E41)+(J30*E42)
+  J37 = (G31*E39)+(H31*E40)+(I31*E41)+(J31*E42)
+  J38 = (G32*E39)+(H32*E40)+(I32*E41)+(J32*E42)
   J39 = (G33*E39)+(H33*E40)+(I33*E41)+(J33*E42)
   ## (WF*J1*J2*J3)*J4
-  G42 = (G36*B45)+(H36*B46)+(I36*B47)+(J36*B48)  
-  G43 = (G37*B45)+(H37*B46)+(I37*B47)+(J37*B48) 
-  G44 = (G38*B45)+(H38*B46)+(I38*B47)+(J38*B48) 
-  G45 = (G39*B45)+(H39*B46)+(I39*B47)+(J39*B48) 
-  H42 = (G36*C45)+(H36*C46)+(I36*C47)+(J36*C48)  
-  H43 = (G37*C45)+(H37*C46)+(I37*C47)+(J37*C48) 
-  H44 = (G38*C45)+(H38*C46)+(I38*C47)+(J38*C48) 
-  H45 = (G39*C45)+(H39*C46)+(I39*C47)+(J39*C48) 
-  I42 = (G36*D45)+(H36*D46)+(I36*D47)+(J36*D48)  
-  I43 = (G37*D45)+(H37*D46)+(I37*D47)+(J37*D48) 
-  I44 = (G38*D45)+(H38*D46)+(I38*D47)+(J38*D48) 
-  I45 = (G39*D45)+(H39*D46)+(I39*D47)+(J39*D48) 
-  J42 = (G36*E45)+(H36*E46)+(I36*E47)+(J36*E48)  
-  J43 = (G37*E45)+(H37*E46)+(I37*E47)+(J37*E48) 
-  J44 = (G38*E45)+(H38*E46)+(I38*E47)+(J38*E48) 
+  G42 = (G36*B45)+(H36*B46)+(I36*B47)+(J36*B48)
+  G43 = (G37*B45)+(H37*B46)+(I37*B47)+(J37*B48)
+  G44 = (G38*B45)+(H38*B46)+(I38*B47)+(J38*B48)
+  G45 = (G39*B45)+(H39*B46)+(I39*B47)+(J39*B48)
+  H42 = (G36*C45)+(H36*C46)+(I36*C47)+(J36*C48)
+  H43 = (G37*C45)+(H37*C46)+(I37*C47)+(J37*C48)
+  H44 = (G38*C45)+(H38*C46)+(I38*C47)+(J38*C48)
+  H45 = (G39*C45)+(H39*C46)+(I39*C47)+(J39*C48)
+  I42 = (G36*D45)+(H36*D46)+(I36*D47)+(J36*D48)
+  I43 = (G37*D45)+(H37*D46)+(I37*D47)+(J37*D48)
+  I44 = (G38*D45)+(H38*D46)+(I38*D47)+(J38*D48)
+  I45 = (G39*D45)+(H39*D46)+(I39*D47)+(J39*D48)
+  J42 = (G36*E45)+(H36*E46)+(I36*E47)+(J36*E48)
+  J43 = (G37*E45)+(H37*E46)+(I37*E47)+(J37*E48)
+  J44 = (G38*E45)+(H38*E46)+(I38*E47)+(J38*E48)
   J45 = (G39*E45)+(H39*E46)+(I39*E47)+(J39*E48)
   ## (WF*J1*J2*J3*J4)*J5
   G48 = (G42*B51)+(H42*B52)+(I42*B53)+(J42*B54)
@@ -3427,7 +3430,7 @@ def CalcFwdKin():
   J49 = (G43*E51)+(H43*E52)+(I43*E53)+(J43*E54)
   J50 = (G44*E51)+(H44*E52)+(I44*E53)+(J44*E54)
   J51 = (G45*E51)+(H45*E52)+(I45*E53)+(J45*E54)
-  ## (WF*J1*J2*J3*J4*J5)*J6 
+  ## (WF*J1*J2*J3*J4*J5)*J6
   G54 = (G48*B57)+(H48*B58)+(I48*B59)+(J48*B60)
   G55 = (G49*B57)+(H49*B58)+(I49*B59)+(J49*B60)
   G56 = (G50*B57)+(H50*B58)+(I50*B59)+(J50*B60)
@@ -3462,15 +3465,15 @@ def CalcFwdKin():
   J62 = (G56*E63)+(H56*E64)+(I56*E65)+(J56*E66)
   J63 = (G57*E63)+(H57*E64)+(I57*E65)+(J57*E66)
   ## GET YPR
-  I8 = math.atan2(math.sqrt((I60**2)+(I61**2)),-I62)  
-  I7 = math.atan2((G62/I8),(H62/I8))  
+  I8 = math.atan2(math.sqrt((I60**2)+(I61**2)),-I62)
+  I7 = math.atan2((G62/I8),(H62/I8))
   I9 = math.atan2((I60/I8),(I61/I8))
   H4 = J60
   H5 = J61
   H6 = J62
   H7 = math.degrees(I7)
   H8 = math.degrees(I8)
-  H9 = math.degrees(I9)  
+  H9 = math.degrees(I9)
   XcurPos = J60
   YcurPos = J61
   ZcurPos = J62
@@ -3496,11 +3499,11 @@ def CalcFwdKin():
 def MoveXYZ(CX,CY,CZ,CRx,CRy,CRz,newSpeed,ACCdur,ACCspd,DECdur,DECspd,WC,TCX,TCY,TCZ,TCRx,TCRy,TCRz,Track):
   CalcRevKin(CX,CY,CZ,CRx,CRy,CRz,WC,TCX,TCY,TCZ,TCRx,TCRy,TCRz)
   MoveNew(J1out,J2out,J3out,J4out,J5out,J6out,newSpeed,ACCdur,ACCspd,DECdur,DECspd,Track)
-  
+
 def CalXYZ(CX,CY,CZ,CRx,CRy,CRz,newSpeed,ACCdur,ACCspd,DECdur,DECspd,WC,TCX,TCY,TCZ,TCRx,TCRy,TCRz,Track):
   CalcRevKin(CX,CY,CZ,CRx,CRy,CRz,WC,TCX,TCY,TCZ,TCRx,TCRy,TCRz)
-  CalNew(J1out,J2out,J3out,J4out,J5out,J6out,newSpeed,ACCdur,ACCspd,DECdur,DECspd,Track)  
-  
+  CalNew(J1out,J2out,J3out,J4out,J5out,J6out,newSpeed,ACCdur,ACCspd,DECdur,DECspd,Track)
+
 
 def CalcRevKin(CX,CY,CZ,CRx,CRy,CRz,WC,TCX,TCY,TCZ,TCRx,TCRy,TCRz):
   global J1out
@@ -3526,11 +3529,11 @@ def CalcRevKin(CX,CY,CZ,CRx,CRy,CRz,WC,TCX,TCY,TCZ,TCRx,TCRy,TCRz):
   if (J5AngCur == 0):
     J5AngCur = .0001
   if (J6AngCur == 0):
-    J6AngCur = .0001  
+    J6AngCur = .0001
   #input
   O4 = CX
-  O5 = CY 
-  O6 = CZ 
+  O5 = CY
+  O6 = CZ
   O9 = CRx
   O8 = CRy
   O7 = CRz
@@ -3546,7 +3549,7 @@ def CalcRevKin(CX,CY,CZ,CRx,CRy,CRz,WC,TCX,TCY,TCZ,TCRx,TCRy,TCRz):
   if (O8 == 0):
     O8 = .0001
   if (O9 == 0):
-    O9 = .0001  
+    O9 = .0001
   #quadrant
   if (O4>0 and O5>0):
     V9 = 1
@@ -3555,7 +3558,7 @@ def CalcRevKin(CX,CY,CZ,CRx,CRy,CRz,WC,TCX,TCY,TCZ,TCRx,TCRy,TCRz):
   elif (O4<0 and O5<0):
     V9 = 3
   elif (O4<0 and O5>0):
-    V9 = 4	
+    V9 = 4
   ## DH TABLE
   D13 = math.radians(DHr1)
   D14 = math.radians(DHr2)
@@ -3574,14 +3577,14 @@ def CalcRevKin(CX,CY,CZ,CRx,CRy,CRz,WC,TCX,TCY,TCZ,TCRx,TCRy,TCRz):
   F15 = DHa3
   F16 = DHa4
   F17 = DHa5
-  F18 = DHa6	
+  F18 = DHa6
   ## WORK FRAME INPUT
-  H13 = -float(UFxEntryField.get()) 
-  H14 = -float(UFyEntryField.get())  
+  H13 = -float(UFxEntryField.get())
+  H14 = -float(UFyEntryField.get())
   H15 = -float(UFzEntryField.get())
-  H16 = -float(UFrxEntryField.get()) 
-  H17 = -float(UFryEntryField.get()) 
-  H18 = -float(UFrzEntryField.get()) 
+  H16 = -float(UFrxEntryField.get())
+  H17 = -float(UFryEntryField.get())
+  H18 = -float(UFrzEntryField.get())
   ## TOOL FRAME INPUT
   J13 = -float(TFxEntryField.get()) + TCX
   J14 = -float(TFyEntryField.get()) + TCY
@@ -3605,24 +3608,24 @@ def CalcRevKin(CX,CY,CZ,CRx,CRy,CRz,WC,TCX,TCY,TCZ,TCRx,TCRy,TCRz):
   N33 = 0
   O33 = 0
   P33 = 0
-  Q33 = 1   
+  Q33 = 1
   ## R 0-T
-  X30 = math.cos(math.radians(O7))*math.cos(math.radians(O9))-math.cos(math.radians(O8))*math.sin(math.radians(O7))*math.sin(math.radians(O9)) 
+  X30 = math.cos(math.radians(O7))*math.cos(math.radians(O9))-math.cos(math.radians(O8))*math.sin(math.radians(O7))*math.sin(math.radians(O9))
   Y30 = math.cos(math.radians(O9))*math.sin(math.radians(O7))+math.cos(math.radians(O7))*math.cos(math.radians(O8))*math.sin(math.radians(O9))
   Z30 = math.sin(math.radians(O8))*math.sin(math.radians(O9))
-  AA30 = O4  
+  AA30 = O4
   X31 = math.cos(math.radians(O8))*math.cos(math.radians(O9))*math.sin(math.radians(O7))+math.cos(math.radians(O7))*math.sin(math.radians(O9))
   Y31 = math.cos(math.radians(O7))*math.cos(math.radians(O8))*math.cos(math.radians(O9))-math.sin(math.radians(O7))*math.sin(math.radians(O9))
   Z31 = math.cos(math.radians(O9))*math.sin(math.radians(O8))
-  AA31 = O5   	
+  AA31 = O5
   X32 = math.sin(math.radians(O7))*math.sin(math.radians(O8))
   Y32 = math.cos(math.radians(O7))*math.sin(math.radians(O8))
   Z32 = -math.cos(math.radians(O8))
-  AA32 = O6 
+  AA32 = O6
   X33 = 0
   Y33 = 0
   Z33 = 0
-  AA33 = 1     
+  AA33 = 1
   ## R 0-T   offset by work frame
   X36 = ((N30*X30)+(O30*X31)+(P30*X32)+(Q30*X33))*-1
   Y36 = (N30*Y30)+(O30*Y31)+(P30*Y32)+(Q30*Y33)
@@ -3631,32 +3634,32 @@ def CalcRevKin(CX,CY,CZ,CRx,CRy,CRz,WC,TCX,TCY,TCZ,TCRx,TCRy,TCRz):
   X37 = (N31*X30)+(O31*X31)+(P31*X32)+(Q31*X33)
   Y37 = (N31*Y30)+(O31*Y31)+(P31*Y32)+(Q31*Y33)
   Z37 = (N31*Z30)+(O31*Z31)+(P31*Z32)+(Q31*Z33)
-  AA37 = (N31*AA30)+(O31*AA31)+(P31*AA32)+(Q31*AA33) 
+  AA37 = (N31*AA30)+(O31*AA31)+(P31*AA32)+(Q31*AA33)
   X38 = (N32*X30)+(O32*X31)+(P32*X32)+(Q32*X33)
   Y38 = (N32*Y30)+(O32*Y31)+(P32*Y32)+(Q32*Y33)
   Z38 = (N32*Z30)+(O32*Z31)+(P32*Z32)+(Q32*Z33)
-  AA38 = (N32*AA30)+(O32*AA31)+(P32*AA32)+(Q32*AA33) 
+  AA38 = (N32*AA30)+(O32*AA31)+(P32*AA32)+(Q32*AA33)
   X39 = (N33*X30)+(O33*X31)+(P33*X32)+(Q33*X33)
   Y39 = (N33*Y30)+(O33*Y31)+(P33*Y32)+(Q33*Y33)
   Z39 = (N33*Z30)+(O33*Z31)+(P33*Z32)+(Q33*Z33)
   AA39 = (N33*AA30)+(O33*AA31)+(P33*AA32)+(Q33*AA33)
   ## TOOL FRAME
   X42 = math.cos(math.radians(J18))*math.cos(math.radians(J17))
-  Y42 = -math.sin(math.radians(J18))*math.cos(math.radians(J16))+math.cos(math.radians(J18))*math.sin(math.radians(J17))*math.sin(math.radians(J16)) 
-  Z42 = math.sin(math.radians(J18))*math.sin(math.radians(J16))+math.cos(math.radians(J18))*math.sin(math.radians(J17))*math.cos(math.radians(J16)) 
+  Y42 = -math.sin(math.radians(J18))*math.cos(math.radians(J16))+math.cos(math.radians(J18))*math.sin(math.radians(J17))*math.sin(math.radians(J16))
+  Z42 = math.sin(math.radians(J18))*math.sin(math.radians(J16))+math.cos(math.radians(J18))*math.sin(math.radians(J17))*math.cos(math.radians(J16))
   AA42 = (J13)
   X43 = math.sin(math.radians(J18))*math.cos(math.radians(J17))
-  Y43 = math.cos(math.radians(J18))*math.cos(math.radians(J16))+math.sin(math.radians(J18))*math.sin(math.radians(J17))*math.sin(math.radians(J16)) 
-  Z43 = -math.cos(math.radians(J18))*math.sin(math.radians(J16))+math.sin(math.radians(J18))*math.sin(math.radians(J17))*math.cos(math.radians(J16)) 
-  AA43 = (J14)  
+  Y43 = math.cos(math.radians(J18))*math.cos(math.radians(J16))+math.sin(math.radians(J18))*math.sin(math.radians(J17))*math.sin(math.radians(J16))
+  Z43 = -math.cos(math.radians(J18))*math.sin(math.radians(J16))+math.sin(math.radians(J18))*math.sin(math.radians(J17))*math.cos(math.radians(J16))
+  AA43 = (J14)
   X44 = -math.sin(math.radians(J18))
-  Y44 = math.cos(math.radians(J17))*math.sin(math.radians(J16)) 
-  Z44 = math.cos(math.radians(J17))*math.cos(math.radians(J16)) 
-  AA44 = (J15)  
+  Y44 = math.cos(math.radians(J17))*math.sin(math.radians(J16))
+  Z44 = math.cos(math.radians(J17))*math.cos(math.radians(J16))
+  AA44 = (J15)
   X45 = 0
-  Y45 = 0 
-  Z45 = 0 
-  AA45 = 1    
+  Y45 = 0
+  Z45 = 0
+  AA45 = 1
   ## INVERT TOOL FRAME
   X48 = X42
   Y48 = X43
@@ -3763,7 +3766,7 @@ def CalcRevKin(CX,CY,CZ,CRx,CRy,CRz,WC,TCX,TCY,TCZ,TCRx,TCRy,TCRz):
   if (O20<0):
     Q6 = P27
   else:
-    Q6 = O27 
+    Q6 = O27
   ## J1
   N36 =math.cos(math.radians(Q4))
   O36 =-math.sin(math.radians(Q4))*math.cos(D13)
@@ -3772,11 +3775,11 @@ def CalcRevKin(CX,CY,CZ,CRx,CRy,CRz,WC,TCX,TCY,TCZ,TCRx,TCRy,TCRz):
   N37 =math.sin(math.radians(Q4))
   O37 =math.cos(math.radians(Q4))*math.cos(D13)
   P37 =-math.cos(math.radians(Q4))*math.sin(D13)
-  Q37 =F13*math.sin(math.radians(Q4)) 
+  Q37 =F13*math.sin(math.radians(Q4))
   N38 = 0
   O38 =math.sin(D13)
   P38 =math.cos(D13)
-  Q38 =E13  
+  Q38 =E13
   N39 = 0
   O39 = 0
   P39 = 0
@@ -3785,20 +3788,20 @@ def CalcRevKin(CX,CY,CZ,CRx,CRy,CRz,WC,TCX,TCY,TCZ,TCRx,TCRy,TCRz):
   N42 =math.cos(math.radians(Q5))
   O42 =-math.sin(math.radians(Q5))*math.cos(D14)
   P42 =math.sin(math.radians(Q5))*math.sin(D14)
-  Q42 =F14*math.cos(math.radians(Q5))  
+  Q42 =F14*math.cos(math.radians(Q5))
   N43 =math.sin(math.radians(Q5))
   O43 =math.cos(math.radians(Q5))*math.cos(D14)
   P43 =-math.cos(math.radians(Q5))*math.sin(D14)
-  Q43 =F14*math.sin(math.radians(Q5))  
+  Q43 =F14*math.sin(math.radians(Q5))
   N44 = 0
   O44 =math.sin(D14)
   P44 =math.cos(D14)
-  Q44 =E14  
+  Q44 =E14
   N45 = 0
   O45 = 0
   P45 = 0
   Q45 = 1
-  ## J3  
+  ## J3
   N48 =math.cos(math.radians((Q6)-90))
   O48 =-math.sin(math.radians((Q6)-90))*math.cos(D15)
   P48 =math.sin(math.radians((Q6)-90))*math.sin(D15)
@@ -3814,12 +3817,12 @@ def CalcRevKin(CX,CY,CZ,CRx,CRy,CRz,WC,TCX,TCY,TCZ,TCRx,TCRy,TCRz):
   N51 =0
   O51 =0
   P51 =0
-  Q51 =0 
+  Q51 =0
   ## R 0-1
   S33 =(N30*N36)+(O30*N37)+(P30*N38)+(Q30*N39)
   T33 =(N30*O36)+(O30*O37)+(P30*O38)+(Q30*O39)
   U33 =(N30*P36)+(O30*P37)+(P30*P38)+(Q30*P39)
-  V33 =(N30*Q36)+(O30*Q37)+(P30*Q38)+(Q30*Q39) 
+  V33 =(N30*Q36)+(O30*Q37)+(P30*Q38)+(Q30*Q39)
   S34 =(N31*N36)+(O31*N37)+(P31*N38)+(Q31*N39)
   T34 =(N31*O36)+(O31*O37)+(P31*O38)+(Q31*O39)
   U34 =(N31*P36)+(O31*P37)+(P31*P38)+(Q31*P39)
@@ -3832,11 +3835,11 @@ def CalcRevKin(CX,CY,CZ,CRx,CRy,CRz,WC,TCX,TCY,TCZ,TCRx,TCRy,TCRz):
   T36 =(N33*O36)+(O33*O37)+(P33*O38)+(Q33*O39)
   U36 =(N33*P36)+(O33*P37)+(P33*P38)+(Q33*P39)
   V36 =(N33*Q36)+(O33*Q37)+(P33*Q38)+(Q33*Q39)
-  ## R 0-2  
+  ## R 0-2
   S39 =(S33*N42)+(T33*N43)+(U33*N44)+(V33*N45)
   T39 =(S33*O42)+(T33*O43)+(U33*O44)+(V33*O45)
   U39 =(S33*P42)+(T33*P43)+(U33*P44)+(V33*P45)
-  V39 =(S33*Q42)+(T33*Q43)+(U33*Q44)+(V33*Q45)  
+  V39 =(S33*Q42)+(T33*Q43)+(U33*Q44)+(V33*Q45)
   S40 =(S34*N42)+(T34*N43)+(U34*N44)+(V34*N45)
   T40 =(S34*O42)+(T34*O43)+(U34*O44)+(V34*O45)
   U40 =(S34*P42)+(T34*P43)+(U34*P44)+(V34*P45)
@@ -3849,11 +3852,11 @@ def CalcRevKin(CX,CY,CZ,CRx,CRy,CRz,WC,TCX,TCY,TCZ,TCRx,TCRy,TCRz):
   T42 =(S36*O42)+(T36*O43)+(U36*O44)+(V36*O45)
   U42 =(S36*P42)+(T36*P43)+(U36*P44)+(V36*P45)
   V42 =(S36*Q42)+(T36*Q43)+(U36*Q44)+(V36*Q45)
-  ## R 0-3 
+  ## R 0-3
   S45 =(S39*N48)+(T39*N49)+(U39*N50)+(V39*N51)
   T45 =(S39*O48)+(T39*O49)+(U39*O50)+(V39*O51)
   U45 =(S39*P48)+(T39*P49)+(U39*P50)+(V39*P51)
-  V45 =(S39*Q48)+(T39*Q49)+(U39*Q50)+(V39*Q51) 
+  V45 =(S39*Q48)+(T39*Q49)+(U39*Q50)+(V39*Q51)
   S46 =(S40*N48)+(T40*N49)+(U40*N50)+(V40*N51)
   T46 =(S40*O48)+(T40*O49)+(U40*O50)+(V40*O51)
   U46 =(S40*P48)+(T40*P49)+(U40*P50)+(V40*P51)
@@ -3877,7 +3880,7 @@ def CalcRevKin(CX,CY,CZ,CRx,CRy,CRz,WC,TCX,TCY,TCZ,TCRx,TCRy,TCRz):
   T53 =U46
   U53 =U47
   ## R 3-6 (spherical wrist  orietation)
-  X72 =(S51*X66)+(T51*X67)+(U51*X68) 
+  X72 =(S51*X66)+(T51*X67)+(U51*X68)
   Y72 =(S51*Y66)+(T51*Y67)+(U51*Y68)
   Z72 =(S51*Z66)+(T51*Z67)+(U51*Z68)
   X73 =(S52*X66)+(T52*X67)+(U52*X68)
@@ -3892,7 +3895,7 @@ def CalcRevKin(CX,CY,CZ,CRx,CRy,CRz,WC,TCX,TCY,TCZ,TCRx,TCRy,TCRz):
   if (Y74 < 0):
     R9 = math.degrees(math.atan2(-Y74,X74))-180
   else:
-    R9 = math.degrees(math.atan2(-Y74,X74))+180  	
+    R9 = math.degrees(math.atan2(-Y74,X74))+180
   S7 = math.degrees(math.atan2(-Z73,-Z72))
   S8 = math.degrees(math.atan2(-math.sqrt(1-Z74**2),Z74))
   if (Y74 < 0):
@@ -3904,7 +3907,7 @@ def CalcRevKin(CX,CY,CZ,CRx,CRy,CRz,WC,TCX,TCY,TCZ,TCRx,TCRy,TCRz):
   else:
     Q8 = S8
   if(Q8>0):
-    Q7 = R7 
+    Q7 = R7
   else:
     Q7 = S7
   if(Q8<0):
@@ -3920,7 +3923,7 @@ def CalcRevKin(CX,CY,CZ,CRx,CRy,CRz,WC,TCX,TCY,TCZ,TCRx,TCRy,TCRz):
   J6out = Q9
   return (J1out,J2out,J3out,J4out,J5out,J6out)
 
-  
+
 
 
 def MoveNew(J1out,J2out,J3out,J4out,J5out,J6out,newSpeed,ACCdur,ACCspd,DECdur,DECspd,Track):
@@ -3939,7 +3942,7 @@ def MoveNew(J1out,J2out,J3out,J4out,J5out,J6out,newSpeed,ACCdur,ACCspd,DECdur,DE
   global J6StepCur
   global TrackcurPos
   global TrackLength
-  global TrackStepLim    
+  global TrackStepLim
   J1newAng = J1out
   J2newAng = J2out
   J3newAng = J3out
@@ -3951,9 +3954,9 @@ def MoveNew(J1out,J2out,J3out,J4out,J5out,J6out,newSpeed,ACCdur,ACCspd,DECdur,DE
   if (J1newAng < J1NegAngLim or J1newAng > J1PosAngLim) or (J2newAng < J2NegAngLim or J2newAng > J2PosAngLim) or (J3newAng < J3NegAngLim or J3newAng > J3PosAngLim) or (J4newAng < J4NegAngLim or J4newAng > J4PosAngLim) or (J5newAng < J5NegAngLim or J5newAng > J5PosAngLim) or (J6newAng < J6NegAngLim or J6newAng > J6PosAngLim or TrackNew < 0 or TrackNew > TrackLength):
     almStatusLab.config(text="AXIS LIMIT", bg = "red")
     tab1.runTrue = 0
-  else:  
+  else:
     ##J1 calc##
-    if (float(J1newAng) >= float(J1AngCur)):   
+    if (float(J1newAng) >= float(J1AngCur)):
       #calc pos dir output
       if (J1motdir == "0"):
 	    J1drivedir = "1"
@@ -3962,18 +3965,18 @@ def MoveNew(J1out,J2out,J3out,J4out,J5out,J6out,newSpeed,ACCdur,ACCspd,DECdur,DE
       J1dir = J1drivedir
       J1calcAng = float(J1newAng) - float(J1AngCur)
       J1steps = int(J1calcAng / J1DegPerStep)
-      J1StepCur = J1StepCur + J1steps #Invert       
+      J1StepCur = J1StepCur + J1steps #Invert
       J1AngCur = round(J1NegAngLim + (J1StepCur * J1DegPerStep),2)
-      J1steps = str(J1steps) 
+      J1steps = str(J1steps)
     elif (float(J1newAng) < float(J1AngCur)):
       J1dir = J1motdir
       J1calcAng = float(J1AngCur) - float(J1newAng)
       J1steps = int(J1calcAng / J1DegPerStep)
-      J1StepCur = J1StepCur - J1steps #Invert       
+      J1StepCur = J1StepCur - J1steps #Invert
       J1AngCur = round(J1NegAngLim + (J1StepCur * J1DegPerStep),2)
-      J1steps = str(J1steps) 
+      J1steps = str(J1steps)
     ##J2 calc##
-    if (float(J2newAng) >= float(J2AngCur)):   
+    if (float(J2newAng) >= float(J2AngCur)):
       #calc pos dir output
       if (J2motdir == "0"):
 	    J2drivedir = "1"
@@ -3982,18 +3985,18 @@ def MoveNew(J1out,J2out,J3out,J4out,J5out,J6out,newSpeed,ACCdur,ACCspd,DECdur,DE
       J2dir = J2drivedir
       J2calcAng = float(J2newAng) - float(J2AngCur)
       J2steps = int(J2calcAng / J2DegPerStep)
-      J2StepCur = J2StepCur + J2steps #Invert       
+      J2StepCur = J2StepCur + J2steps #Invert
       J2AngCur = round(J2NegAngLim + (J2StepCur * J2DegPerStep),2)
-      J2steps = str(J2steps) 
+      J2steps = str(J2steps)
     elif (float(J2newAng) < float(J2AngCur)):
       J2dir = J2motdir
       J2calcAng = float(J2AngCur) - float(J2newAng)
       J2steps = int(J2calcAng / J2DegPerStep)
-      J2StepCur = J2StepCur - J2steps #Invert       
+      J2StepCur = J2StepCur - J2steps #Invert
       J2AngCur = round(J2NegAngLim + (J2StepCur * J2DegPerStep),2)
-      J2steps = str(J2steps) 
+      J2steps = str(J2steps)
     ##J3 calc##
-    if (float(J3newAng) >= float(J3AngCur)):   
+    if (float(J3newAng) >= float(J3AngCur)):
       #calc pos dir output
       if (J3motdir == "0"):
 	    J3drivedir = "1"
@@ -4002,18 +4005,18 @@ def MoveNew(J1out,J2out,J3out,J4out,J5out,J6out,newSpeed,ACCdur,ACCspd,DECdur,DE
       J3dir = J3drivedir
       J3calcAng = float(J3newAng) - float(J3AngCur)
       J3steps = int(J3calcAng / J3DegPerStep)
-      J3StepCur = J3StepCur + J3steps #Invert       
+      J3StepCur = J3StepCur + J3steps #Invert
       J3AngCur = round(J3NegAngLim + (J3StepCur * J3DegPerStep),2)
-      J3steps = str(J3steps) 
+      J3steps = str(J3steps)
     elif (float(J3newAng) < float(J3AngCur)):
       J3dir = J3motdir
       J3calcAng = float(J3AngCur) - float(J3newAng)
       J3steps = int(J3calcAng / J3DegPerStep)
-      J3StepCur = J3StepCur - J3steps #Invert       
+      J3StepCur = J3StepCur - J3steps #Invert
       J3AngCur = round(J3NegAngLim + (J3StepCur * J3DegPerStep),2)
-      J3steps = str(J3steps) 
+      J3steps = str(J3steps)
     ##J4 calc##
-    if (float(J4newAng) >= float(J4AngCur)):   
+    if (float(J4newAng) >= float(J4AngCur)):
       #calc pos dir output
       if (J4motdir == "0"):
 	    J4drivedir = "1"
@@ -4022,18 +4025,18 @@ def MoveNew(J1out,J2out,J3out,J4out,J5out,J6out,newSpeed,ACCdur,ACCspd,DECdur,DE
       J4dir = J4drivedir
       J4calcAng = float(J4newAng) - float(J4AngCur)
       J4steps = int(J4calcAng / J4DegPerStep)
-      J4StepCur = J4StepCur + J4steps #Invert       
+      J4StepCur = J4StepCur + J4steps #Invert
       J4AngCur = round(J4NegAngLim + (J4StepCur * J4DegPerStep),2)
-      J4steps = str(J4steps) 
+      J4steps = str(J4steps)
     elif (float(J4newAng) < float(J4AngCur)):
       J4dir = J4motdir
       J4calcAng = float(J4AngCur) - float(J4newAng)
       J4steps = int(J4calcAng / J4DegPerStep)
-      J4StepCur = J4StepCur - J4steps #Invert       
+      J4StepCur = J4StepCur - J4steps #Invert
       J4AngCur = round(J4NegAngLim + (J4StepCur * J4DegPerStep),2)
-      J4steps = str(J4steps) 
+      J4steps = str(J4steps)
     ##J5 calc##
-    if (float(J5newAng) >= float(J5AngCur)):   
+    if (float(J5newAng) >= float(J5AngCur)):
       #calc pos dir output
       if (J5motdir == "0"):
 	    J5drivedir = "1"
@@ -4042,18 +4045,18 @@ def MoveNew(J1out,J2out,J3out,J4out,J5out,J6out,newSpeed,ACCdur,ACCspd,DECdur,DE
       J5dir = J5drivedir
       J5calcAng = float(J5newAng) - float(J5AngCur)
       J5steps = int(J5calcAng / J5DegPerStep)
-      J5StepCur = J5StepCur + J5steps #Invert       
+      J5StepCur = J5StepCur + J5steps #Invert
       J5AngCur = round(J5NegAngLim + (J5StepCur * J5DegPerStep),2)
-      J5steps = str(J5steps) 
+      J5steps = str(J5steps)
     elif (float(J5newAng) < float(J5AngCur)):
       J5dir = J5motdir
       J5calcAng = float(J5AngCur) - float(J5newAng)
       J5steps = int(J5calcAng / J5DegPerStep)
-      J5StepCur = J5StepCur - J5steps #Invert       
+      J5StepCur = J5StepCur - J5steps #Invert
       J5AngCur = round(J5NegAngLim + (J5StepCur * J5DegPerStep),2)
-      J5steps = str(J5steps) 
+      J5steps = str(J5steps)
     ##J6 calc##
-    if (float(J6newAng) >= float(J6AngCur)):   
+    if (float(J6newAng) >= float(J6AngCur)):
       #calc pos dir output
       if (J6motdir == "0"):
 	    J6drivedir = "1"
@@ -4062,14 +4065,14 @@ def MoveNew(J1out,J2out,J3out,J4out,J5out,J6out,newSpeed,ACCdur,ACCspd,DECdur,DE
       J6dir = J6drivedir
       J6calcAng = float(J6newAng) - float(J6AngCur)
       J6steps = int(J6calcAng / J6DegPerStep)
-      J6StepCur = J6StepCur + J6steps #Invert       
+      J6StepCur = J6StepCur + J6steps #Invert
       J6AngCur = round(J6NegAngLim + (J6StepCur * J6DegPerStep),2)
-      J6steps = str(J6steps) 
+      J6steps = str(J6steps)
     elif (float(J6newAng) < float(J6AngCur)):
       J6dir = J6motdir
       J6calcAng = float(J6AngCur) - float(J6newAng)
       J6steps = int(J6calcAng / J6DegPerStep)
-      J6StepCur = J6StepCur - J6steps #Invert       
+      J6StepCur = J6StepCur - J6steps #Invert
       J6AngCur = round(J6NegAngLim + (J6StepCur * J6DegPerStep),2)
       J6steps = str(J6steps)
     ##Track calc##
@@ -4079,16 +4082,16 @@ def MoveNew(J1out,J2out,J3out,J4out,J5out,J6out,newSpeed,ACCdur,ACCspd,DECdur,DE
 	  TRstep = str(int((TrackStepLim/TrackLength)*TRdist))
     else:
       TRdir = "0"
-      TRdist = TrackcurPos - TrackNew	
+      TRdist = TrackcurPos - TrackNew
       TRstep = str(int((TrackStepLim/TrackLength)*TRdist))
     TrackcurPos = TrackNew
-    TrackcurEntryField.delete(0, 'end')  
-    TrackcurEntryField.insert(0,str(TrackcurPos))	
+    TrackcurEntryField.delete(0, 'end')
+    TrackcurEntryField.insert(0,str(TrackcurPos))
     commandCalc = "MJA"+J1dir+J1steps+"B"+J2dir+J2steps+"C"+J3dir+J3steps+"D"+J4dir+J4steps+"E"+J5dir+J5steps+"F"+J6dir+J6steps+"T"+TRdir+TRstep+"S"+newSpeed+"G"+ACCdur+"H"+ACCspd+"I"+DECdur+"K"+DECspd
     ser.write(commandCalc +"\n")
     ser.flushInput()
     time.sleep(.2)
-    ser.read() 
+    ser.read()
     #manEntryField.delete(0, 'end')
     #manEntryField.insert(0,commandCalc)
     J1curAngEntryField.delete(0, 'end')
@@ -4105,9 +4108,9 @@ def MoveNew(J1out,J2out,J3out,J4out,J5out,J6out,newSpeed,ACCdur,ACCspd,DECdur,DE
     J6curAngEntryField.insert(0,str(J6AngCur))
     CalcFwdKin()
     DisplaySteps()
-    savePosData()  
+    savePosData()
 
-	
+
 
 def CalNew(J1out,J2out,J3out,J4out,J5out,J6out,newSpeed,ACCdur,ACCspd,DECdur,DECspd,Track):
   almStatusLab.config(text="SYSTEM READY", bg = "grey")
@@ -4125,7 +4128,7 @@ def CalNew(J1out,J2out,J3out,J4out,J5out,J6out,newSpeed,ACCdur,ACCspd,DECdur,DEC
   global J6StepCur
   global TrackcurPos
   global TrackLength
-  global TrackStepLim    
+  global TrackStepLim
   J1newAng = J1out
   J2newAng = J2out
   J3newAng = J3out
@@ -4137,9 +4140,9 @@ def CalNew(J1out,J2out,J3out,J4out,J5out,J6out,newSpeed,ACCdur,ACCspd,DECdur,DEC
   if (J1newAng < J1NegAngLim or J1newAng > J1PosAngLim) or (J2newAng < J2NegAngLim or J2newAng > J2PosAngLim) or (J3newAng < J3NegAngLim or J3newAng > J3PosAngLim) or (J4newAng < J4NegAngLim or J4newAng > J4PosAngLim) or (J5newAng < J5NegAngLim or J5newAng > J5PosAngLim) or (J6newAng < J6NegAngLim or J6newAng > J6PosAngLim or TrackNew < 0 or TrackNew > TrackLength):
     almStatusLab.config(text="AXIS LIMIT", bg = "red")
     tab1.runTrue = 0
-  else:  
+  else:
     ##J1 calc##
-    if (float(J1newAng) >= float(J1AngCur)):   
+    if (float(J1newAng) >= float(J1AngCur)):
       #calc pos dir output
       if (J1motdir == "0"):
 	    J1drivedir = "1"
@@ -4148,18 +4151,18 @@ def CalNew(J1out,J2out,J3out,J4out,J5out,J6out,newSpeed,ACCdur,ACCspd,DECdur,DEC
       J1dir = J1drivedir
       J1calcAng = float(J1newAng) - float(J1AngCur)
       J1steps = int(J1calcAng / J1DegPerStep)
-      J1StepCur = J1StepCur + J1steps #Invert       
+      J1StepCur = J1StepCur + J1steps #Invert
       J1AngCur = round(J1NegAngLim + (J1StepCur * J1DegPerStep),2)
-      J1steps = str(J1steps) 
+      J1steps = str(J1steps)
     elif (float(J1newAng) < float(J1AngCur)):
       J1dir = J1motdir
       J1calcAng = float(J1AngCur) - float(J1newAng)
       J1steps = int(J1calcAng / J1DegPerStep)
-      J1StepCur = J1StepCur - J1steps #Invert       
+      J1StepCur = J1StepCur - J1steps #Invert
       J1AngCur = round(J1NegAngLim + (J1StepCur * J1DegPerStep),2)
-      J1steps = str(J1steps) 
+      J1steps = str(J1steps)
     ##J2 calc##
-    if (float(J2newAng) >= float(J2AngCur)):   
+    if (float(J2newAng) >= float(J2AngCur)):
       #calc pos dir output
       if (J2motdir == "0"):
 	    J2drivedir = "1"
@@ -4168,18 +4171,18 @@ def CalNew(J1out,J2out,J3out,J4out,J5out,J6out,newSpeed,ACCdur,ACCspd,DECdur,DEC
       J2dir = J2drivedir
       J2calcAng = float(J2newAng) - float(J2AngCur)
       J2steps = int(J2calcAng / J2DegPerStep)
-      J2StepCur = J2StepCur + J2steps #Invert       
+      J2StepCur = J2StepCur + J2steps #Invert
       J2AngCur = round(J2NegAngLim + (J2StepCur * J2DegPerStep),2)
-      J2steps = str(J2steps) 
+      J2steps = str(J2steps)
     elif (float(J2newAng) < float(J2AngCur)):
       J2dir = J2motdir
       J2calcAng = float(J2AngCur) - float(J2newAng)
       J2steps = int(J2calcAng / J2DegPerStep)
-      J2StepCur = J2StepCur - J2steps #Invert       
+      J2StepCur = J2StepCur - J2steps #Invert
       J2AngCur = round(J2NegAngLim + (J2StepCur * J2DegPerStep),2)
-      J2steps = str(J2steps) 
+      J2steps = str(J2steps)
     ##J3 calc##
-    if (float(J3newAng) >= float(J3AngCur)):   
+    if (float(J3newAng) >= float(J3AngCur)):
       #calc pos dir output
       if (J3motdir == "0"):
 	    J3drivedir = "1"
@@ -4188,18 +4191,18 @@ def CalNew(J1out,J2out,J3out,J4out,J5out,J6out,newSpeed,ACCdur,ACCspd,DECdur,DEC
       J3dir = J3drivedir
       J3calcAng = float(J3newAng) - float(J3AngCur)
       J3steps = int(J3calcAng / J3DegPerStep)
-      J3StepCur = J3StepCur + J3steps #Invert       
+      J3StepCur = J3StepCur + J3steps #Invert
       J3AngCur = round(J3NegAngLim + (J3StepCur * J3DegPerStep),2)
-      J3steps = str(J3steps) 
+      J3steps = str(J3steps)
     elif (float(J3newAng) < float(J3AngCur)):
       J3dir = J3motdir
       J3calcAng = float(J3AngCur) - float(J3newAng)
       J3steps = int(J3calcAng / J3DegPerStep)
-      J3StepCur = J3StepCur - J3steps #Invert       
+      J3StepCur = J3StepCur - J3steps #Invert
       J3AngCur = round(J3NegAngLim + (J3StepCur * J3DegPerStep),2)
-      J3steps = str(J3steps) 
+      J3steps = str(J3steps)
     ##J4 calc##
-    if (float(J4newAng) >= float(J4AngCur)):   
+    if (float(J4newAng) >= float(J4AngCur)):
       #calc pos dir output
       if (J4motdir == "0"):
 	    J4drivedir = "1"
@@ -4208,18 +4211,18 @@ def CalNew(J1out,J2out,J3out,J4out,J5out,J6out,newSpeed,ACCdur,ACCspd,DECdur,DEC
       J4dir = J4drivedir
       J4calcAng = float(J4newAng) - float(J4AngCur)
       J4steps = int(J4calcAng / J4DegPerStep)
-      J4StepCur = J4StepCur + J4steps #Invert       
+      J4StepCur = J4StepCur + J4steps #Invert
       J4AngCur = round(J4NegAngLim + (J4StepCur * J4DegPerStep),2)
-      J4steps = str(J4steps) 
+      J4steps = str(J4steps)
     elif (float(J4newAng) < float(J4AngCur)):
       J4dir = J4motdir
       J4calcAng = float(J4AngCur) - float(J4newAng)
       J4steps = int(J4calcAng / J4DegPerStep)
-      J4StepCur = J4StepCur - J4steps #Invert       
+      J4StepCur = J4StepCur - J4steps #Invert
       J4AngCur = round(J4NegAngLim + (J4StepCur * J4DegPerStep),2)
-      J4steps = str(J4steps) 
+      J4steps = str(J4steps)
     ##J5 calc##
-    if (float(J5newAng) >= float(J5AngCur)):   
+    if (float(J5newAng) >= float(J5AngCur)):
       #calc pos dir output
       if (J5motdir == "0"):
 	    J5drivedir = "1"
@@ -4228,18 +4231,18 @@ def CalNew(J1out,J2out,J3out,J4out,J5out,J6out,newSpeed,ACCdur,ACCspd,DECdur,DEC
       J5dir = J5drivedir
       J5calcAng = float(J5newAng) - float(J5AngCur)
       J5steps = int(J5calcAng / J5DegPerStep)
-      J5StepCur = J5StepCur + J5steps #Invert       
+      J5StepCur = J5StepCur + J5steps #Invert
       J5AngCur = round(J5NegAngLim + (J5StepCur * J5DegPerStep),2)
-      J5steps = str(J5steps) 
+      J5steps = str(J5steps)
     elif (float(J5newAng) < float(J5AngCur)):
       J5dir = J5motdir
       J5calcAng = float(J5AngCur) - float(J5newAng)
       J5steps = int(J5calcAng / J5DegPerStep)
-      J5StepCur = J5StepCur - J5steps #Invert       
+      J5StepCur = J5StepCur - J5steps #Invert
       J5AngCur = round(J5NegAngLim + (J5StepCur * J5DegPerStep),2)
-      J5steps = str(J5steps) 
+      J5steps = str(J5steps)
     ##J6 calc##
-    if (float(J6newAng) >= float(J6AngCur)):   
+    if (float(J6newAng) >= float(J6AngCur)):
       #calc pos dir output
       if (J6motdir == "0"):
 	    J6drivedir = "1"
@@ -4248,14 +4251,14 @@ def CalNew(J1out,J2out,J3out,J4out,J5out,J6out,newSpeed,ACCdur,ACCspd,DECdur,DEC
       J6dir = J6drivedir
       J6calcAng = float(J6newAng) - float(J6AngCur)
       J6steps = int(J6calcAng / J6DegPerStep)
-      J6StepCur = J6StepCur + J6steps #Invert       
+      J6StepCur = J6StepCur + J6steps #Invert
       J6AngCur = round(J6NegAngLim + (J6StepCur * J6DegPerStep),2)
-      J6steps = str(J6steps) 
+      J6steps = str(J6steps)
     elif (float(J6newAng) < float(J6AngCur)):
       J6dir = J6motdir
       J6calcAng = float(J6AngCur) - float(J6newAng)
       J6steps = int(J6calcAng / J6DegPerStep)
-      J6StepCur = J6StepCur - J6steps #Invert       
+      J6StepCur = J6StepCur - J6steps #Invert
       J6AngCur = round(J6NegAngLim + (J6StepCur * J6DegPerStep),2)
       J6steps = str(J6steps)
     ##Track calc##
@@ -4265,11 +4268,11 @@ def CalNew(J1out,J2out,J3out,J4out,J5out,J6out,newSpeed,ACCdur,ACCspd,DECdur,DEC
 	  TRstep = str(int((TrackStepLim/TrackLength)*TRdist))
     else:
       TRdir = "0"
-      TRdist = TrackcurPos - TrackNew	
+      TRdist = TrackcurPos - TrackNew
       TRstep = str(int((TrackStepLim/TrackLength)*TRdist))
     TrackcurPos = TrackNew
-    TrackcurEntryField.delete(0, 'end')  
-    TrackcurEntryField.insert(0,str(TrackcurPos))	
+    TrackcurEntryField.delete(0, 'end')
+    TrackcurEntryField.insert(0,str(TrackcurPos))
     commandCalc = "MJA"+J1dir+J1steps+"B"+J2dir+J2steps+"C"+J3dir+J3steps+"D"+J4dir+J4steps+"E"+J5dir+J5steps+"F"+J6dir+J6steps+"T"+TRdir+TRstep+"S"+newSpeed+"G"+ACCdur+"H"+ACCspd+"I"+DECdur+"K"+DECspd
     J1curAngEntryField.delete(0, 'end')
     J1curAngEntryField.insert(0,str(J1AngCur))
@@ -4285,19 +4288,19 @@ def CalNew(J1out,J2out,J3out,J4out,J5out,J6out,newSpeed,ACCdur,ACCspd,DECdur,DEC
     J6curAngEntryField.insert(0,str(J6AngCur))
     CalcFwdKin()
     DisplaySteps()
-    savePosData()  	
- 
- 
-def testvis():  
+    savePosData()
+
+
+def testvis():
   visprog = visoptions.get()
   if(visprog[:]== "Openvision"):
     openvision()
   if(visprog[:]== "Roborealm 1.7.5"):
     roborealm175()
   if(visprog[:]== "x,y,r"):
-    xyr()	
-	
-	
+    xyr()
+
+
 
 def openvision():
   global Xpos
@@ -4307,42 +4310,42 @@ def openvision():
   while (visfail == 1):
     value = 0
     almStatusLab.config(text="WAITING FOR CAMERA", bg = "yellow")
-    while (value == 0): 
+    while (value == 0):
       try:
         with  open(VisFileLoc,"r") as file:
           value = file.readlines()[-1].decode()
       except:
-        value = 0  
+        value = 0
     almStatusLab.config(text="SYSTEM READY", bg = "grey")
     x = int(value[110:122])
     y = int(value[130:142])
     viscalc(x,y)
     if (Ypos > VisEndYmm):
       visfail = 1
-      time.sleep(.2)
+      time.sleep(.1)
     else:
       visfail = 0
-  open(VisFileLoc,"w").close()	  
+  open(VisFileLoc,"w").close()
   VisXfindEntryField.delete(0, 'end')
-  VisXfindEntryField.insert(0,Xpos) 
+  VisXfindEntryField.insert(0,Xpos)
   VisYfindEntryField.delete(0, 'end')
-  VisYfindEntryField.insert(0,Ypos) 
+  VisYfindEntryField.insert(0,Ypos)
   VisRZfindEntryField.delete(0, 'end')
   VisRZfindEntryField.insert(0,0)
   ##
   VisXpixfindEntryField.delete(0, 'end')
-  VisXpixfindEntryField.insert(0,x) 
+  VisXpixfindEntryField.insert(0,x)
   VisYpixfindEntryField.delete(0, 'end')
-  VisYpixfindEntryField.insert(0,y) 
+  VisYpixfindEntryField.insert(0,y)
   ##
   SP_1_E1_EntryField.delete(0, 'end')
-  SP_1_E1_EntryField.insert(0,Xpos) 
+  SP_1_E1_EntryField.insert(0,Xpos)
   SP_1_E2_EntryField.delete(0, 'end')
-  SP_1_E2_EntryField.insert(0,Ypos) 
- 
+  SP_1_E2_EntryField.insert(0,Ypos)
 
 
-  
+
+
 def roborealm175():
   global Xpos
   global Ypos
@@ -4351,12 +4354,12 @@ def roborealm175():
   while (visfail == 1):
     value = 0
     almStatusLab.config(text="WAITING FOR CAMERA", bg = "yellow")
-    while (value == 0): 
+    while (value == 0):
       try:
         with  open(VisFileLoc,"r") as file:
           value = file.readlines()[-1].decode()
       except:
-        value = 0 
+        value = 0
     almStatusLab.config(text="SYSTEM READY", bg = "grey")
     Index = value.find(",")
     x = float(value[:Index])
@@ -4364,27 +4367,27 @@ def roborealm175():
     viscalc(x,y)
     if (Ypos > VisEndYmm):
       visfail = 1
-      time.sleep(.2)
+      time.sleep(.1)
     else:
       visfail = 0
-  open(VisFileLoc,"w").close() 
+  open(VisFileLoc,"w").close()
   VisXfindEntryField.delete(0, 'end')
-  VisXfindEntryField.insert(0,Xpos) 
+  VisXfindEntryField.insert(0,Xpos)
   VisYfindEntryField.delete(0, 'end')
-  VisYfindEntryField.insert(0,Ypos) 
+  VisYfindEntryField.insert(0,Ypos)
   VisRZfindEntryField.delete(0, 'end')
   VisRZfindEntryField.insert(0,0)
   ##
   VisXpixfindEntryField.delete(0, 'end')
-  VisXpixfindEntryField.insert(0,x) 
+  VisXpixfindEntryField.insert(0,x)
   VisYpixfindEntryField.delete(0, 'end')
-  VisYpixfindEntryField.insert(0,y) 
+  VisYpixfindEntryField.insert(0,y)
   ##
   SP_1_E1_EntryField.delete(0, 'end')
-  SP_1_E1_EntryField.insert(0,Xpos) 
+  SP_1_E1_EntryField.insert(0,Xpos)
   SP_1_E2_EntryField.delete(0, 'end')
-  SP_1_E2_EntryField.insert(0,Ypos) 
- 
+  SP_1_E2_EntryField.insert(0,Ypos)
+
 
 
 def xyr():
@@ -4395,12 +4398,12 @@ def xyr():
   while (visfail == 1):
     value = 0
     almStatusLab.config(text="WAITING FOR CAMERA", bg = "yellow")
-    while (value == 0): 
+    while (value == 0):
       try:
         with  open(VisFileLoc,"r") as file:
           value = file.readlines()[-1].decode()
       except:
-        value = 0 
+        value = 0
     almStatusLab.config(text="SYSTEM READY", bg = "grey")
     Index = value.find(",")
     x = float(value[:Index])
@@ -4411,30 +4414,30 @@ def xyr():
     viscalc(x,y)
     if (Ypos > VisEndYmm):
       visfail = 1
-      time.sleep(.2)
+      time.sleep(.1)
     else:
       visfail = 0
-  open(VisFileLoc,"w").close() 
+  open(VisFileLoc,"w").close()
   VisXfindEntryField.delete(0, 'end')
-  VisXfindEntryField.insert(0,Xpos) 
+  VisXfindEntryField.insert(0,Xpos)
   VisYfindEntryField.delete(0, 'end')
-  VisYfindEntryField.insert(0,Ypos) 
+  VisYfindEntryField.insert(0,Ypos)
   VisRZfindEntryField.delete(0, 'end')
   VisRZfindEntryField.insert(0,r)
   ##
   VisXpixfindEntryField.delete(0, 'end')
-  VisXpixfindEntryField.insert(0,x) 
+  VisXpixfindEntryField.insert(0,x)
   VisYpixfindEntryField.delete(0, 'end')
-  VisYpixfindEntryField.insert(0,y) 
+  VisYpixfindEntryField.insert(0,y)
   ##
   SP_1_E1_EntryField.delete(0, 'end')
-  SP_1_E1_EntryField.insert(0,str(Xpos)) 
+  SP_1_E1_EntryField.insert(0,str(Xpos))
   SP_1_E2_EntryField.delete(0, 'end')
-  SP_1_E2_EntryField.insert(0,str(Ypos)) 
+  SP_1_E2_EntryField.insert(0,str(Ypos))
   SP_1_E3_EntryField.delete(0, 'end')
   SP_1_E3_EntryField.insert(0,r)
-    
-  
+
+
 
 def viscalc(x,y):
   global VisOrigXpix
@@ -4460,9 +4463,9 @@ def viscalc(x,y):
   Ypos = float(VisOrigYmm + YMpos)
   return (Xpos,Ypos)
 
- 
- 
-  
+
+
+
 ####################################################################################################################################################
 ####################################################################################################################################################
 ####################################################################################################################################################
@@ -4470,40 +4473,40 @@ def viscalc(x,y):
 
 
 
-  
+
 
 ###LABELS#################################################################
 ##########################################################################
 
 curRowLab = Label(tab1, text = "Current Row  = ")
-curRowLab.place(x=220, y=150)
+curRowLab.place(x=290, y=150)
 
 almStatusLab = Label(tab1, text = "SYSTEM READY - NO ACTIVE ALARMS", bg = "grey")
-almStatusLab.place(x=175, y=10)
+almStatusLab.place(x=180, y=12)
 
 
 runStatusLab = Label(tab1, text = "PROGRAM STOPPED", bg = "red")
-runStatusLab.place(x=20, y=150)
+runStatusLab.place(x=10, y=150)
 
 
 
 manEntLab = Label(tab1, font=("Arial", 6), text = "Manual Program Entry")
-manEntLab.place(x=630, y=630)
+manEntLab.place(x=580, y=560)
 
 ifOnLab = Label(tab1,font=("Arial", 6), text = "Input           Tab")
-ifOnLab.place(x=1092, y=348)
+ifOnLab.place(x=985, y=342)
 
 ifOffLab = Label(tab1,font=("Arial", 6), text = "Input           Tab")
-ifOffLab.place(x=1092, y=388)
+ifOffLab.place(x=985, y=372)
 
-regEqLab = Label(tab1,font=("Arial", 6), text = "Register         Num (++/- -)")
-regEqLab.place(x=1077, y=467)
+regEqLab = Label(tab1,font=("Arial", 6), text = "Register        Num (++/--)")
+regEqLab.place(x=970, y=432)
 
-ifregTabJmpLab = Label(tab1,font=("Arial", 6), text = "Register             Num              Jump to Tab")
-ifregTabJmpLab.place(x=1077, y=507)
+ifregTabJmpLab = Label(tab1,font=("Arial", 6), text = "Register         Num            Jump to Tab")
+ifregTabJmpLab.place(x=970, y=462)
 
 servoLab = Label(tab1,font=("Arial", 6), text = "Number      Position")
-servoLab.place(x=1092, y=428)
+servoLab.place(x=985, y=402)
 
 ComPortLab = Label(tab1, text = "COM PORT:")
 ComPortLab.place(x=10, y=10)
@@ -4511,106 +4514,106 @@ ComPortLab.place(x=10, y=10)
 ProgLab = Label(tab1, text = "Program:")
 ProgLab.place(x=10, y=45)
 
-speedLab = Label(tab1, text = "Robot Speed    (%)")
-speedLab.place(x=356, y=100)
+speedLab = Label(tab1, text = "Robot Speed   (%)")
+speedLab.place(x=270, y=75)
 
 ACCLab = Label(tab1, text = "ACC(dur/speed %)")
-ACCLab.place(x=356, y=125)
+ACCLab.place(x=270, y=100)
 
 DECLab = Label(tab1, text = "DEC(dur/speed %)")
-DECLab.place(x=356, y=150)
+DECLab.place(x=270, y=125)
 
 
 J1Lab = Label(tab1, font=("Arial", 18), text = "J1")
-J1Lab.place(x=660, y=5)
+J1Lab.place(x=605, y=5)
 
 J2Lab = Label(tab1, font=("Arial",18), text = "J2")
-J2Lab.place(x=750, y=5)
+J2Lab.place(x=695, y=5)
 
 J3Lab = Label(tab1, font=("Arial", 18), text = "J3")
-J3Lab.place(x=840, y=5)
+J3Lab.place(x=785, y=5)
 
 J4Lab = Label(tab1, font=("Arial", 18), text = "J4")
-J4Lab.place(x=930, y=5)
+J4Lab.place(x=875, y=5)
 
 J5Lab = Label(tab1, font=("Arial", 18), text = "J5")
-J5Lab.place(x=1020, y=5)
+J5Lab.place(x=965, y=5)
 
 J6Lab = Label(tab1, font=("Arial", 18), text = "J6")
-J6Lab.place(x=1110, y=5)
+J6Lab.place(x=1055, y=5)
 
 
 ####STEPS LABELS BLUE######
 stepCol = "SteelBlue4"
 
-StepsLab = Label(tab1, font=("Arial", 8), fg=stepCol, text = "/step")
-StepsLab.place(x=620, y=40)
+StepsLab = Label(tab1, font=("Arial", 8), fg=stepCol, text = "step")
+StepsLab.place(x=565, y=40)
 
 J1stepsLab = Label(tab1, font=("Arial", 8), fg=stepCol, text = "000")
-J1stepsLab.place(x=695, y=40)
+J1stepsLab.place(x=640, y=40)
 
 J2stepsLab = Label(tab1, font=("Arial", 8), fg=stepCol, text = "000")
-J2stepsLab.place(x=785, y=40)
+J2stepsLab.place(x=730, y=40)
 
 J3stepsLab = Label(tab1, font=("Arial", 8), fg=stepCol, text = "000")
-J3stepsLab.place(x=875, y=40)
+J3stepsLab.place(x=820, y=40)
 
 J4stepsLab = Label(tab1, font=("Arial", 8), fg=stepCol, text = "000")
-J4stepsLab.place(x=965, y=40)
+J4stepsLab.place(x=910, y=40)
 
 J5stepsLab = Label(tab1, font=("Arial", 8), fg=stepCol, text = "000")
-J5stepsLab.place(x=1055, y=40)
+J5stepsLab.place(x=1000, y=40)
 
 J6stepsLab = Label(tab1, font=("Arial", 8), fg=stepCol, text = "000")
-J6stepsLab.place(x=1145, y=40)
+J6stepsLab.place(x=1090, y=40)
 
 
 
 
 
 XLab = Label(tab1, font=("Arial", 18), text = " X")
-XLab.place(x=660, y=125)
+XLab.place(x=602, y=125)
 
 YLab = Label(tab1, font=("Arial",18), text = " Y")
-YLab.place(x=750, y=125)
+YLab.place(x=692, y=125)
 
 ZLab = Label(tab1, font=("Arial", 18), text = " Z")
-ZLab.place(x=840, y=125)
+ZLab.place(x=782, y=125)
 
 yLab = Label(tab1, font=("Arial", 18), text = " W")
-yLab.place(x=930, y=125)
+yLab.place(x=870, y=125)
 
 pLab = Label(tab1, font=("Arial", 18), text = " P")
-pLab.place(x=1020, y=125)
+pLab.place(x=962, y=125)
 
 rLab = Label(tab1, font=("Arial", 18), text = " R")
-rLab.place(x=1110, y=125)
+rLab.place(x=1052, y=125)
 
 
 
 TrackLab = Label(tab1, font=("Arial", 18), text = "Track")
-TrackLab.place(x=1217, y=125)
+TrackLab.place(x=1155, y=125)
 
 
 
 
 TXLab = Label(tab1, font=("Arial", 18), text = "Tx")
-TXLab.place(x=660, y=250)
+TXLab.place(x=602, y=250)
 
 TYLab = Label(tab1, font=("Arial",18), text = "Ty")
-TYLab.place(x=750, y=250)
+TYLab.place(x=692, y=250)
 
 TZLab = Label(tab1, font=("Arial", 18), text = "Tz")
-TZLab.place(x=840, y=250)
+TZLab.place(x=782, y=250)
 
 TyLab = Label(tab1, font=("Arial", 18), text = "Tw")
-TyLab.place(x=930, y=250)
+TyLab.place(x=872, y=250)
 
 TpLab = Label(tab1, font=("Arial", 18), text = "Tp")
-TpLab.place(x=1020, y=250)
+TpLab.place(x=962, y=250)
 
 TrLab = Label(tab1, font=("Arial", 18), text = "Tr")
-TrLab.place(x=1110, y=250)
+TrLab.place(x=1052, y=250)
 
 
 
@@ -4618,81 +4621,81 @@ TrLab.place(x=1110, y=250)
 
 
 J1curAngLab = Label(tab1, text = "Current Angle:")
-J1curAngLab.place(x=540, y=40)
+J1curAngLab.place(x=470, y=40)
 
 XYZcurPoLab = Label(tab1, text = "Current Position:")
-XYZcurPoLab.place(x=540, y=160)
+XYZcurPoLab.place(x=470, y=160)
 
 J1jogDegsLab = Label(tab1, text = "Degrees to Jog:")
-J1jogDegsLab.place(x=540, y=65)
+J1jogDegsLab.place(x=470, y=65)
 
 XYZjogMMLab = Label(tab1, text = "Millimeters to Jog:")
-XYZjogMMLab.place(x=540, y=185)
+XYZjogMMLab.place(x=470, y=185)
 
 J1jogRobotLab = Label(tab1, text = "JOG ROBOT")
-J1jogRobotLab.place(x=540, y=92)
+J1jogRobotLab.place(x=470, y=92)
 
 XYZjogRobotLab = Label(tab1, text = "JOG ROBOT")
-XYZjogRobotLab.place(x=540, y=212)
+XYZjogRobotLab.place(x=470, y=212)
 
 TXYZjogMMLab = Label(tab1, text = "Millimeters to Jog:")
-TXYZjogMMLab.place(x=540, y=285)
+TXYZjogMMLab.place(x=470, y=285)
 
 TXYZjogRobotLab = Label(tab1, text = "JOG ROBOT")
-TXYZjogRobotLab.place(x=540, y=310)
+TXYZjogRobotLab.place(x=470, y=310)
 
 
 
 waitTequalsLab = Label(tab1, text = "=")
-waitTequalsLab.place(x=855, y=360)
+waitTequalsLab.place(x=760, y=353)
 
 waitIequalsLab = Label(tab1, text = "=")
-waitIequalsLab.place(x=855, y=400)
+waitIequalsLab.place(x=760, y=383)
 
 waitIoffequalsLab = Label(tab1, text = "=")
-waitIoffequalsLab.place(x=855, y=440)
+waitIoffequalsLab.place(x=760, y=413)
 
 outputOnequalsLab = Label(tab1, text = "=")
-outputOnequalsLab.place(x=855, y=480)
+outputOnequalsLab.place(x=760, y=443)
 
 outputOffequalsLab = Label(tab1, text = "=")
-outputOffequalsLab.place(x=855, y=520)
+outputOffequalsLab.place(x=760, y=473)
 
 tabequalsLab = Label(tab1, text = "=")
-tabequalsLab.place(x=1290, y=360)
+tabequalsLab.place(x=1185, y=353)
 
 jumpequalsLab = Label(tab1, text = "=")
-jumpequalsLab.place(x=1290, y=400)
+jumpequalsLab.place(x=1185, y=383)
 
 jumpIfOnequalsLab = Label(tab1, text = "=")
-jumpIfOnequalsLab.place(x=1075, y=360)
+jumpIfOnequalsLab.place(x=965, y=353)
 
 jumpIfOffequalsLab = Label(tab1, text = "=")
-jumpIfOffequalsLab.place(x=1075, y=400)
+jumpIfOffequalsLab.place(x=965, y=383)
 
 servoequalsLab = Label(tab1, text = "=")
-servoequalsLab.place(x=1075, y=440)
+servoequalsLab.place(x=965, y=413)
 
 changeProgequalsLab = Label(tab1, text = "=")
-changeProgequalsLab.place(x=695, y=560)
+changeProgequalsLab.place(x=595, y=505)
 
 regequalsLab = Label(tab1, text = "=")
-regequalsLab.place(x=1117, y=481)
+regequalsLab.place(x=1005, y=443)
 
 regJmpequalsLab = Label(tab1, text = "=")
-regJmpequalsLab.place(x=1117, y=521)
+regJmpequalsLab.place(x=1005, y=473)
 
-savePositionLab = Label(tab1, text = "Stored Position  = ")
-savePositionLab.place(x=542, y=400)
-
-
+savePositionLab = Label(tab1, text = "Stored Pos = ")
+savePositionLab.place(x=470, y=385)
 
 
-storPosEqLab = Label(tab1,font=("Arial", 6), text = " StorPos            Element          Num (++/- -)")
-storPosEqLab.place(x=1077, y=547)
+
+
+storPosEqLab = Label(tab1,font=("Arial", 6), text = "StorPos         Element         Num (++/--)")
+storPosEqLab.place(x=970, y=492)
 
 storPosequalsLab = Label(tab1, text = "=")
-storPosequalsLab.place(x=1117, y=561)
+storPosequalsLab.place(x=1005, y=503)
 
 
 ###BUTTONS################################################################
@@ -4701,227 +4704,226 @@ storPosequalsLab.place(x=1117, y=561)
 
 
 manInsBut = Button(tab1, bg="grey85", text="Insert", height=1, width=6, command = manInsItem)
-manInsBut.place(x=1220, y=641)
-
+manInsBut.place(x=1095, y=570)
 manRepBut = Button(tab1, bg="grey85", text="Replace", height=1, width=6, command = manReplItem)
-manRepBut.place(x=1280, y=641)
+manRepBut.place(x=1175, y=570)
 
-getSelBut = Button(tab1, bg="grey85", text="Get Selected", height=1, width=10, command = getSel)
-getSelBut.place(x=540, y=641)
+getSelBut = Button(tab1, bg="grey85", text="Get Selected", height=1, width=9, command = getSel)
+getSelBut.place(x=470, y=570)
 
 options=StringVar(tab1)
 options.set("Move J")
 menu=OptionMenu(tab1, options, "Move J", "OFFS J", "Move SP", "OFFS SP", "Teach SP")
 menu.grid(row=2,column=2)
-menu.place(x=540, y=360)
+menu.place(x=470, y=350)
 
-teachInsBut = Button(tab1, bg="grey85", text="Teach New Position", height=1, width=20, command = teachInsertBelSelected)
-teachInsBut.place(x=540, y=440)
+teachInsBut = Button(tab1, bg="grey85", text="Teach New Pos", height=1, width=12, command = teachInsertBelSelected)
+teachInsBut.place(x=470, y=410)
 
-teachReplaceBut = Button(tab1, bg="grey85", text="Modify Position", height=1, width=20, command = teachReplaceSelected)
-teachReplaceBut.place(x=540, y=480)
+teachReplaceBut = Button(tab1, bg="grey85", text="Modify Position", height=1, width=12, command = teachReplaceSelected)
+teachReplaceBut.place(x=470, y=440)
 
-waitTimeBut = Button(tab1, bg="grey85", text="Wait Time (seconds)", height=1, width=20, command = waitTime)
-waitTimeBut.place(x=700, y=360)
+waitTimeBut = Button(tab1, bg="grey85", text="Wait Time (seconds)", height=1, width=15, command = waitTime)
+waitTimeBut.place(x=610, y=350)
 
-waitInputOnBut = Button(tab1, bg="grey85", text="Wait Input ON", height=1, width=20, command = waitInputOn)
-waitInputOnBut.place(x=700, y=400)
+waitInputOnBut = Button(tab1, bg="grey85", text="Wait Input ON", height=1, width=15, command = waitInputOn)
+waitInputOnBut.place(x=610, y=380)
 
-waitInputOffBut = Button(tab1, bg="grey85", text="Wait Input OFF", height=1, width=20, command = waitInputOff)
-waitInputOffBut.place(x=700, y=440)
+waitInputOffBut = Button(tab1, bg="grey85", text="Wait Input OFF", height=1, width=15, command = waitInputOff)
+waitInputOffBut.place(x=610, y=410)
 
-setOutputOnBut = Button(tab1, bg="grey85", text="Set Output On", height=1, width=20, command = setOutputOn)
-setOutputOnBut.place(x=700, y=480)
+setOutputOnBut = Button(tab1, bg="grey85", text="Set Output On", height=1, width=15, command = setOutputOn)
+setOutputOnBut.place(x=610, y=440)
 
-setOutputOffBut = Button(tab1, bg="grey85", text="Set Output OFF", height=1, width=20, command = setOutputOff)
-setOutputOffBut.place(x=700, y=520)
+setOutputOffBut = Button(tab1, bg="grey85", text="Set Output OFF", height=1, width=15, command = setOutputOff)
+setOutputOffBut.place(x=610, y=470)
 
-tabNumBut = Button(tab1, bg="grey85", text="Create Tab", height=1, width=14, command = tabNumber)
-tabNumBut.place(x=1175, y=360)
+tabNumBut = Button(tab1, bg="grey85", text="Create Tab", height=1, width=8, command = tabNumber)
+tabNumBut.place(x=1090, y=350)
 
-jumpTabBut = Button(tab1, bg="grey85", text="Jump to Tab", height=1, width=14, command = jumpTab)
-jumpTabBut.place(x=1175, y=400)
+jumpTabBut = Button(tab1, bg="grey85", text="Jump to Tab", height=1, width=8, command = jumpTab)
+jumpTabBut.place(x=1090, y=380)
 
-getVisBut = Button(tab1, bg="grey85", text="Get Vision", height=1, width=14, command = getvision)
-getVisBut.place(x=1175, y=440)
+getVisBut = Button(tab1, bg="grey85", text="Get Vision", height=1, width=16, command = getvision)
+getVisBut.place(x=1090, y=410)
 
-IfOnjumpTabBut = Button(tab1, bg="grey85", text="If On Jump", height=1, width=20, command = IfOnjumpTab)
-IfOnjumpTabBut.place(x=920, y=360)
+IfOnjumpTabBut = Button(tab1, bg="grey85", text="If On Jump", height=1, width=12, command = IfOnjumpTab)
+IfOnjumpTabBut.place(x=840, y=350)
 
-IfOffjumpTabBut = Button(tab1, bg="grey85", text="If Off Jump", height=1, width=20, command = IfOffjumpTab)
-IfOffjumpTabBut.place(x=920, y=400)
+IfOffjumpTabBut = Button(tab1, bg="grey85", text="If Off Jump", height=1, width=12, command = IfOffjumpTab)
+IfOffjumpTabBut.place(x=840, y=380)
 
-servoBut = Button(tab1, bg="grey85", text="Servo", height=1, width=20, command = Servo)
-servoBut.place(x=920, y=440)
+servoBut = Button(tab1, bg="grey85", text="Servo", height=1, width=12, command = Servo)
+servoBut.place(x=840, y=410)
 
-callBut = Button(tab1, bg="grey85", text="Call Program", height=1, width=20, command = insertCallProg)
-callBut.place(x=540, y=560)
+callBut = Button(tab1, bg="grey85", text="Call Program", height=1, width=12, command = insertCallProg)
+callBut.place(x=470, y=500)
 
-returnBut = Button(tab1, bg="grey85", text="Return", height=1, width=20, command = insertReturn)
-returnBut.place(x=540, y=600)
+returnBut = Button(tab1, bg="grey85", text="Return", height=1, width=12, command = insertReturn)
+returnBut.place(x=470, y=530)
 
-comPortBut = Button(tab1, bg="grey85", text="Set Com", height=0, width=7, command = setCom)
+comPortBut = Button(tab1, bg="grey85", text="Set Com", height=1, width=5, command = setCom)
 comPortBut.place(x=103, y=7)
 
-ProgBut = Button(tab1, bg="grey85", text="Load Program", height=0, width=12, command = loadProg)
-ProgBut.place(x=202, y=42)
+ProgBut = Button(tab1, bg="grey85", text="Load Program", height=0, width=10, command = loadProg)
+ProgBut.place(x=202, y=41)
 
-deleteBut = Button(tab1, bg="grey85", text="Delete", height=1, width=20, command = deleteitem)
-deleteBut.place(x=540, y=520)
+deleteBut = Button(tab1, bg="grey85", text="Delete", height=1, width=12, command = deleteitem)
+deleteBut.place(x=470, y=470)
 
 runProgBut = Button(tab1, height=60, width=60, command = runProg)
-playPhoto=PhotoImage(file="play-icon.gif")
+playPhoto=PhotoImage(file="/home/pi/Documents/AR2/RaspberryPi/play-icon.gif")
 runProgBut.config(image=playPhoto,width="60",height="60")
-runProgBut.place(x=20, y=80)
+runProgBut.place(x=10, y=75)
 
 stopProgBut = Button(tab1, height=60, width=60, command = stopProg)
-stopPhoto=PhotoImage(file="stop-icon.gif")
+stopPhoto=PhotoImage(file="/home/pi/Documents/AR2/RaspberryPi/stop-icon.gif")
 stopProgBut.config(image=stopPhoto,width="60",height="60")
-stopProgBut.place(x=200, y=80)
+stopProgBut.place(x=190, y=75)
 
-fwdBut = Button(tab1, bg="grey85", text="FWD", height=3, width=4, command = stepFwd)
-fwdBut.place(x=100, y=80)
+fwdBut = Button(tab1, bg="grey85", text="FWD", height=2, width=3, command = stepFwd)
+fwdBut.place(x=80, y=87)
 
-revBut = Button(tab1, bg="grey85", text="REV", height=3, width=4, command = stepRev)
-revBut.place(x=150, y=80)
+revBut = Button(tab1, bg="grey85", text="REV", height=2, width=3, command = stepRev)
+revBut.place(x=135, y=87)
 
-RegNumBut = Button(tab1, bg="grey85", text="Register", height=1, width=20, command = insertRegister)
-RegNumBut.place(x=920, y=480)
+RegNumBut = Button(tab1, bg="grey85", text="Register", height=1, width=12, command = insertRegister)
+RegNumBut.place(x=840, y=440)
 
-RegJmpBut = Button(tab1, bg="grey85", text="If Register Jump", height=1, width=20, command = IfRegjumpTab)
-RegJmpBut.place(x=920, y=520)
+RegJmpBut = Button(tab1, bg="grey85", text="If Register Jump", height=1, width=12, command = IfRegjumpTab)
+RegJmpBut.place(x=840, y=470)
 
-CalibrateBut = Button(tab1, bg="grey85", text="Auto Calibrate CMD", height=1, width=20, command = insCalibrate)
-CalibrateBut.place(x=700, y=600)
+CalibrateBut = Button(tab1, bg="grey85", text="Auto Calibrate CMD", height=1, width=15, command = insCalibrate)
+CalibrateBut.place(x=610, y=530)
 
-J1jogNegBut = Button(tab1, bg="grey85", text="-", height=1, width=3, command = J1jogNeg)
-J1jogNegBut.place(x=642, y=90)
+J1jogNegBut = Button(tab1, bg="grey85", text="-", height=0, width=1, command = J1jogNeg)
+J1jogNegBut.place(x=580, y=90)
 
-J1jogPosBut = Button(tab1, bg="grey85",text="+", height=1, width=3, command = J1jogPos)
-J1jogPosBut.place(x=680, y=90)
+J1jogPosBut = Button(tab1, bg="grey85",text="+", height=0, width=1, command = J1jogPos)
+J1jogPosBut.place(x=620, y=90)
 
-J2jogNegBut = Button(tab1, bg="grey85",text="-", height=1, width=3, command = J2jogNeg)
-J2jogNegBut.place(x=732, y=90)
+J2jogNegBut = Button(tab1, bg="grey85",text="-", height=1, width=1, command = J2jogNeg)
+J2jogNegBut.place(x=670, y=90)
 
-J2jogPosBut = Button(tab1, bg="grey85",text="+", height=1, width=3, command = J2jogPos)
-J2jogPosBut.place(x=770, y=90)
+J2jogPosBut = Button(tab1, bg="grey85",text="+", height=1, width=1, command = J2jogPos)
+J2jogPosBut.place(x=710, y=90)
 
-J3jogNegBut = Button(tab1, bg="grey85",text="-", height=1, width=3, command = J3jogNeg)
-J3jogNegBut.place(x=822, y=90)
+J3jogNegBut = Button(tab1, bg="grey85",text="-", height=1, width=1, command = J3jogNeg)
+J3jogNegBut.place(x=760, y=90)
 
-J3jogPosBut = Button(tab1, bg="grey85",text="+", height=1, width=3, command = J3jogPos)
-J3jogPosBut.place(x=860, y=90)
+J3jogPosBut = Button(tab1, bg="grey85",text="+", height=1, width=1, command = J3jogPos)
+J3jogPosBut.place(x=800, y=90)
 
-J4jogNegBut = Button(tab1, bg="grey85",text="-", height=1, width=3, command = J4jogNeg)
-J4jogNegBut.place(x=912, y=90)
+J4jogNegBut = Button(tab1, bg="grey85",text="-", height=1, width=1, command = J4jogNeg)
+J4jogNegBut.place(x=850, y=90)
 
-J4jogPosBut = Button(tab1, bg="grey85",text="+", height=1, width=3, command = J4jogPos)
-J4jogPosBut.place(x=950, y=90)
+J4jogPosBut = Button(tab1, bg="grey85",text="+", height=1, width=1, command = J4jogPos)
+J4jogPosBut.place(x=890, y=90)
 
-J5jogNegBut = Button(tab1, bg="grey85",text="-", height=1, width=3, command = J5jogNeg)
-J5jogNegBut.place(x=1002, y=90)
+J5jogNegBut = Button(tab1, bg="grey85",text="-", height=1, width=1, command = J5jogNeg)
+J5jogNegBut.place(x=940, y=90)
 
-J5jogPosBut = Button(tab1, bg="grey85",text="+", height=1, width=3, command = J5jogPos)
-J5jogPosBut.place(x=1040, y=90)
+J5jogPosBut = Button(tab1, bg="grey85",text="+", height=1, width=1, command = J5jogPos)
+J5jogPosBut.place(x=980, y=90)
 
-J6jogNegBut = Button(tab1, bg="grey85",text="-", height=1, width=3, command = J6jogNeg)
-J6jogNegBut.place(x=1092, y=90)
+J6jogNegBut = Button(tab1, bg="grey85",text="-", height=1, width=1, command = J6jogNeg)
+J6jogNegBut.place(x=1030, y=90)
 
-J6jogPosBut = Button(tab1, bg="grey85",text="+", height=1, width=3, command = J6jogPos)
-J6jogPosBut.place(x=1130, y=90)
+J6jogPosBut = Button(tab1, bg="grey85",text="+", height=1, width=1, command = J6jogPos)
+J6jogPosBut.place(x=1070, y=90)
 
-XjogNegBut = Button(tab1, bg="grey85",text="-", height=1, width=3, command = XjogNeg)
-XjogNegBut.place(x=642, y=210)
+XjogNegBut = Button(tab1, bg="grey85",text="-", height=1, width=1, command = XjogNeg)
+XjogNegBut.place(x=580, y=210)
 
-XjogPosBut = Button(tab1, bg="grey85",text="+", height=1, width=3, command = XjogPos)
-XjogPosBut.place(x=680, y=210)
+XjogPosBut = Button(tab1, bg="grey85",text="+", height=1, width=1, command = XjogPos)
+XjogPosBut.place(x=620, y=210)
 
-YjogNegBut = Button(tab1, bg="grey85",text="-", height=1, width=3, command = YjogNeg)
-YjogNegBut.place(x=732, y=210)
+YjogNegBut = Button(tab1, bg="grey85",text="-", height=1, width=1, command = YjogNeg)
+YjogNegBut.place(x=670, y=210)
 
-YjogPosBut = Button(tab1, bg="grey85",text="+", height=1, width=3, command = YjogPos)
-YjogPosBut.place(x=770, y=210)
+YjogPosBut = Button(tab1, bg="grey85",text="+", height=1, width=1, command = YjogPos)
+YjogPosBut.place(x=710, y=210)
 
-ZjogNegBut = Button(tab1, bg="grey85",text="-", height=1, width=3, command = ZjogNeg)
-ZjogNegBut.place(x=822, y=210)
+ZjogNegBut = Button(tab1, bg="grey85",text="-", height=1, width=1, command = ZjogNeg)
+ZjogNegBut.place(x=760, y=210)
 
-ZjogPosBut = Button(tab1, bg="grey85",text="+", height=1, width=3, command = ZjogPos)
-ZjogPosBut.place(x=860, y=210)
+ZjogPosBut = Button(tab1, bg="grey85",text="+", height=1, width=1, command = ZjogPos)
+ZjogPosBut.place(x=800, y=210)
 
-RxjogNegBut = Button(tab1, bg="grey85",text="-", height=1, width=3, command = RxjogNeg)
-RxjogNegBut.place(x=912, y=210)
+RxjogNegBut = Button(tab1, bg="grey85",text="-", height=1, width=1, command = RxjogNeg)
+RxjogNegBut.place(x=850, y=210)
 
-RxjogPosBut = Button(tab1, bg="grey85",text="+", height=1, width=3, command = RxjogPos)
-RxjogPosBut.place(x=950, y=210)
+RxjogPosBut = Button(tab1, bg="grey85",text="+", height=1, width=1, command = RxjogPos)
+RxjogPosBut.place(x=890, y=210)
 
-RyjogNegBut = Button(tab1, bg="grey85",text="-", height=1, width=3, command = RyjogNeg)
-RyjogNegBut.place(x=1002, y=210)
+RyjogNegBut = Button(tab1, bg="grey85",text="-", height=1, width=1, command = RyjogNeg)
+RyjogNegBut.place(x=940, y=210)
 
-RyjogPosBut = Button(tab1, bg="grey85",text="+", height=1, width=3, command = RyjogPos)
-RyjogPosBut.place(x=1040, y=210)
+RyjogPosBut = Button(tab1, bg="grey85",text="+", height=1, width=1, command = RyjogPos)
+RyjogPosBut.place(x=980, y=210)
 
-RzjogNegBut = Button(tab1, bg="grey85",text="-", height=1, width=3, command = RzjogNeg)
-RzjogNegBut.place(x=1092, y=210)
+RzjogNegBut = Button(tab1, bg="grey85",text="-", height=1, width=1, command = RzjogNeg)
+RzjogNegBut.place(x=1030, y=210)
 
-RzjogPosBut = Button(tab1, bg="grey85",text="+", height=1, width=3, command = RzjogPos)
-RzjogPosBut.place(x=1130, y=210)
-
-
-
-TrackjogNegBut = Button(tab1, bg="grey85",text="-", height=1, width=3, command = TrackjogNeg)
-TrackjogNegBut.place(x=1212, y=210)
-
-TrackjogPosBut = Button(tab1, bg="grey85",text="+", height=1, width=3, command = TrackjogPos)
-TrackjogPosBut.place(x=1250, y=210)
+RzjogPosBut = Button(tab1, bg="grey85",text="+", height=1, width=1, command = RzjogPos)
+RzjogPosBut.place(x=1070, y=210)
 
 
+
+TrackjogNegBut = Button(tab1, bg="grey85",text="-", height=1, width=1, command = TrackjogNeg)
+TrackjogNegBut.place(x=1150, y=210)
+
+TrackjogPosBut = Button(tab1, bg="grey85",text="+", height=1, width=1, command = TrackjogPos)
+TrackjogPosBut.place(x=1190, y=210)
 
 
 
 
-TXjogNegBut = Button(tab1, bg="grey85",text="-", height=1, width=3, command = TXjogNeg)
-TXjogNegBut.place(x=642, y=310)
 
-TXjogPosBut = Button(tab1, bg="grey85",text="+", height=1, width=3, command = TXjogPos)
-TXjogPosBut.place(x=680, y=310)
 
-TYjogNegBut = Button(tab1, bg="grey85",text="-", height=1, width=3, command = TYjogNeg)
-TYjogNegBut.place(x=732, y=310)
+TXjogNegBut = Button(tab1, bg="grey85",text="-", height=1, width=1, command = TXjogNeg)
+TXjogNegBut.place(x=580, y=310)
 
-TYjogPosBut = Button(tab1, bg="grey85",text="+", height=1, width=3, command = TYjogPos)
-TYjogPosBut.place(x=770, y=310)
+TXjogPosBut = Button(tab1, bg="grey85",text="+", height=1, width=1, command = TXjogPos)
+TXjogPosBut.place(x=620, y=310)
 
-TZjogNegBut = Button(tab1, bg="grey85",text="-", height=1, width=3, command = TZjogNeg)
-TZjogNegBut.place(x=822, y=310)
+TYjogNegBut = Button(tab1, bg="grey85",text="-", height=1, width=1, command = TYjogNeg)
+TYjogNegBut.place(x=670, y=310)
 
-TZjogPosBut = Button(tab1, bg="grey85",text="+", height=1, width=3, command = TZjogPos)
-TZjogPosBut.place(x=860, y=310)
+TYjogPosBut = Button(tab1, bg="grey85",text="+", height=1, width=1, command = TYjogPos)
+TYjogPosBut.place(x=710, y=310)
 
-TRxjogNegBut = Button(tab1, bg="grey85",text="-", height=1, width=3, command = TRxjogNeg)
-TRxjogNegBut.place(x=912, y=310)
+TZjogNegBut = Button(tab1, bg="grey85",text="-", height=1, width=1, command = TZjogNeg)
+TZjogNegBut.place(x=760, y=310)
 
-TRxjogPosBut = Button(tab1, bg="grey85",text="+", height=1, width=3, command = TRxjogPos)
-TRxjogPosBut.place(x=950, y=310)
+TZjogPosBut = Button(tab1, bg="grey85",text="+", height=1, width=1, command = TZjogPos)
+TZjogPosBut.place(x=800, y=310)
 
-TRyjogNegBut = Button(tab1, bg="grey85",text="-", height=1, width=3, command = TRyjogNeg)
-TRyjogNegBut.place(x=1002, y=310)
+TRxjogNegBut = Button(tab1, bg="grey85",text="-", height=1, width=1, command = TRxjogNeg)
+TRxjogNegBut.place(x=850, y=310)
 
-TRyjogPosBut = Button(tab1, bg="grey85",text="+", height=1, width=3, command = TRyjogPos)
-TRyjogPosBut.place(x=1040, y=310)
+TRxjogPosBut = Button(tab1, bg="grey85",text="+", height=1, width=1, command = TRxjogPos)
+TRxjogPosBut.place(x=890, y=310)
 
-TRzjogNegBut = Button(tab1, bg="grey85",text="-", height=1, width=3, command = TRzjogNeg)
-TRzjogNegBut.place(x=1092, y=310)
+TRyjogNegBut = Button(tab1, bg="grey85",text="-", height=1, width=1, command = TRyjogNeg)
+TRyjogNegBut.place(x=940, y=310)
 
-TRzjogPosBut = Button(tab1, bg="grey85",text="+", height=1, width=3, command = TRzjogPos)
-TRzjogPosBut.place(x=1130, y=310)
+TRyjogPosBut = Button(tab1, bg="grey85",text="+", height=1, width=1, command = TRyjogPos)
+TRyjogPosBut.place(x=980, y=310)
+
+TRzjogNegBut = Button(tab1, bg="grey85",text="-", height=1, width=1, command = TRzjogNeg)
+TRzjogNegBut.place(x=1030, y=310)
+
+TRzjogPosBut = Button(tab1, bg="grey85",text="+", height=1, width=1, command = TRzjogPos)
+TRzjogPosBut.place(x=1070, y=310)
 
 
 JogStepsCbut = Checkbutton(tab1, text="Jog joints in steps",variable = JogStepsStat)
-JogStepsCbut.place(x=1190, y=10)
+JogStepsCbut.place(x=1130, y=10)
 
 
-StorPosBut = Button(tab1, bg="grey85", text="Stored Position", height=1, width=20, command = storPos)
-StorPosBut.place(x=920, y=560)
+StorPosBut = Button(tab1, bg="grey85", text="Stored Position", height=1, width=12, command = storPos)
+StorPosBut.place(x=840, y=500)
 
 
 
@@ -4933,159 +4935,159 @@ StorPosBut.place(x=920, y=560)
 
 
 
-curRowEntryField = Entry(tab1,width=5)
-curRowEntryField.place(x=310, y=150)
+curRowEntryField = Entry(tab1,width=6)
+curRowEntryField.place(x=395, y=150)
 
-manEntryField = Entry(tab1,width=95)
-manEntryField.place(x=630, y=645)
+manEntryField = Entry(tab1,width=62)
+manEntryField.place(x=580, y=575)
 
-ProgEntryField = Entry(tab1,width=20)
+ProgEntryField = Entry(tab1,width=15)
 ProgEntryField.place(x=70, y=45)
 
 comPortEntryField = Entry(tab1,width=2)
 comPortEntryField.place(x=80, y=10)
 
 speedEntryField = Entry(tab1,width=3)
-speedEntryField.place(x=465, y=100)
+speedEntryField.place(x=395, y=75)
 
 ACCdurField = Entry(tab1,width=3)
-ACCdurField.place(x=465, y=125)
+ACCdurField.place(x=395, y=100)
 
 DECdurField = Entry(tab1,width=3)
-DECdurField.place(x=465, y=150)
+DECdurField.place(x=395, y=125)
 
 ACCspeedField = Entry(tab1,width=3)
-ACCspeedField.place(x=490, y=125)
+ACCspeedField.place(x=420, y=100)
 
 DECspeedField = Entry(tab1,width=3)
-DECspeedField.place(x=490, y=150)
+DECspeedField.place(x=420, y=125)
 
 waitTimeEntryField = Entry(tab1,width=5)
-waitTimeEntryField.place(x=872, y=363)
+waitTimeEntryField.place(x=775, y=353)
 
-SavePosEntryField = Entry(tab1,width=5)
-SavePosEntryField.place(x=650, y=402)
+SavePosEntryField = Entry(tab1,width=3)
+SavePosEntryField.place(x=560, y=385)
 
 
 
 waitInputEntryField = Entry(tab1,width=5)
-waitInputEntryField.place(x=872, y=403)
+waitInputEntryField.place(x=775, y=383)
 
 waitInputOffEntryField = Entry(tab1,width=5)
-waitInputOffEntryField.place(x=872, y=443)
+waitInputOffEntryField.place(x=775, y=413)
 
 outputOnEntryField = Entry(tab1,width=5)
-outputOnEntryField.place(x=872, y=483)
+outputOnEntryField.place(x=775, y=443)
 
 outputOffEntryField = Entry(tab1,width=5)
-outputOffEntryField.place(x=872, y=523)
+outputOffEntryField.place(x=775, y=473)
 
 tabNumEntryField = Entry(tab1,width=5)
-tabNumEntryField.place(x=1310, y=363)
+tabNumEntryField.place(x=1200, y=353)
 
 jumpTabEntryField = Entry(tab1,width=5)
-jumpTabEntryField.place(x=1310, y=403)
+jumpTabEntryField.place(x=1200, y=383)
 
-IfOnjumpInputTabEntryField = Entry(tab1,width=5)
-IfOnjumpInputTabEntryField.place(x=1092, y=363)
+IfOnjumpInputTabEntryField = Entry(tab1,width=4)
+IfOnjumpInputTabEntryField.place(x=985, y=353)
 
-IfOnjumpNumberTabEntryField = Entry(tab1,width=5)
-IfOnjumpNumberTabEntryField.place(x=1132, y=363)
+IfOnjumpNumberTabEntryField = Entry(tab1,width=4)
+IfOnjumpNumberTabEntryField.place(x=1025, y=353)
 
-IfOffjumpInputTabEntryField = Entry(tab1,width=5)
-IfOffjumpInputTabEntryField.place(x=1092, y=403)
+IfOffjumpInputTabEntryField = Entry(tab1,width=4)
+IfOffjumpInputTabEntryField.place(x=985, y=383)
 
-IfOffjumpNumberTabEntryField = Entry(tab1,width=5)
-IfOffjumpNumberTabEntryField.place(x=1132, y=403)
+IfOffjumpNumberTabEntryField = Entry(tab1,width=4)
+IfOffjumpNumberTabEntryField.place(x=1025, y=383)
 
-servoNumEntryField = Entry(tab1,width=5)
-servoNumEntryField.place(x=1092, y=443)
+servoNumEntryField = Entry(tab1,width=4)
+servoNumEntryField.place(x=985, y=413)
 
-servoPosEntryField = Entry(tab1,width=5)
-servoPosEntryField.place(x=1132, y=443)
+servoPosEntryField = Entry(tab1,width=4)
+servoPosEntryField.place(x=1025, y=413)
 
-changeProgEntryField = Entry(tab1,width=22)
-changeProgEntryField.place(x=712, y=563)
+changeProgEntryField = Entry(tab1,width=17)
+changeProgEntryField.place(x=610, y=503)
 
 
 
-regNumEntryField = Entry(tab1,width=5)
-regNumEntryField.place(x=1080, y=483)
+regNumEntryField = Entry(tab1,width=4)
+regNumEntryField.place(x=970, y=443)
 
-regEqEntryField = Entry(tab1,width=5)
-regEqEntryField.place(x=1132, y=483)
+regEqEntryField = Entry(tab1,width=4)
+regEqEntryField.place(x=1015, y=443)
 
-regNumJmpEntryField = Entry(tab1,width=5)
-regNumJmpEntryField.place(x=1080, y=523)
+regNumJmpEntryField = Entry(tab1,width=4)
+regNumJmpEntryField.place(x=970, y=473)
 
-regEqJmpEntryField = Entry(tab1,width=5)
-regEqJmpEntryField.place(x=1132, y=523)
+regEqJmpEntryField = Entry(tab1,width=4)
+regEqJmpEntryField.place(x=1015, y=473)
 
-regTabJmpEntryField = Entry(tab1,width=5)
-regTabJmpEntryField.place(x=1184, y=523)
+regTabJmpEntryField = Entry(tab1,width=4)
+regTabJmpEntryField.place(x=1060, y=473)
 
-storPosNumEntryField = Entry(tab1,width=5)
-storPosNumEntryField.place(x=1080, y=563)
+storPosNumEntryField = Entry(tab1,width=4)
+storPosNumEntryField.place(x=970, y=503)
 
-storPosElEntryField = Entry(tab1,width=5)
-storPosElEntryField.place(x=1132, y=563)
+storPosElEntryField = Entry(tab1,width=4)
+storPosElEntryField.place(x=1015, y=503)
 
-storPosValEntryField = Entry(tab1,width=5)
-storPosValEntryField.place(x=1184, y=563)
+storPosValEntryField = Entry(tab1,width=4)
+storPosValEntryField.place(x=1060, y=503)
 
 
   ### J1 ###
 
 J1curAngEntryField = Entry(tab1,width=5)
-J1curAngEntryField.place(x=660, y=40)
+J1curAngEntryField.place(x=595, y=40)
 
 J1jogDegsEntryField = Entry(tab1,width=5)
-J1jogDegsEntryField.place(x=660, y=65)
+J1jogDegsEntryField.place(x=595, y=65)
 
 
    ### J2 ###
 
 J2curAngEntryField = Entry(tab1,width=5)
-J2curAngEntryField.place(x=750, y=40)
+J2curAngEntryField.place(x=685, y=40)
 
 J2jogDegsEntryField = Entry(tab1,width=5)
-J2jogDegsEntryField.place(x=750, y=65)
+J2jogDegsEntryField.place(x=685, y=65)
 
 
    ### J3 ###
 
 J3curAngEntryField = Entry(tab1,width=5)
-J3curAngEntryField.place(x=840, y=40)
+J3curAngEntryField.place(x=775, y=40)
 
 J3jogDegsEntryField = Entry(tab1,width=5)
-J3jogDegsEntryField.place(x=840, y=65)
+J3jogDegsEntryField.place(x=775, y=65)
 
 
    ### J4 ###
 
 J4curAngEntryField = Entry(tab1,width=5)
-J4curAngEntryField.place(x=930, y=40)
+J4curAngEntryField.place(x=865, y=40)
 
 J4jogDegsEntryField = Entry(tab1,width=5)
-J4jogDegsEntryField.place(x=930, y=65)
+J4jogDegsEntryField.place(x=865, y=65)
 
 
    ### J5 ###
 
 J5curAngEntryField = Entry(tab1,width=5)
-J5curAngEntryField.place(x=1020, y=40)
+J5curAngEntryField.place(x=955, y=40)
 
 J5jogDegsEntryField = Entry(tab1,width=5)
-J5jogDegsEntryField.place(x=1020, y=65)
+J5jogDegsEntryField.place(x=955, y=65)
 
 
    ### J6 ###
 
 J6curAngEntryField = Entry(tab1,width=5)
-J6curAngEntryField.place(x=1110, y=40)
+J6curAngEntryField.place(x=1045, y=40)
 
 J6jogDegsEntryField = Entry(tab1,width=5)
-J6jogDegsEntryField.place(x=1110, y=65)
+J6jogDegsEntryField.place(x=1045, y=65)
 
 
 
@@ -5096,65 +5098,65 @@ J6jogDegsEntryField.place(x=1110, y=65)
   ### X ###
 
 XcurEntryField = Entry(tab1,width=5)
-XcurEntryField.place(x=660, y=160)
+XcurEntryField.place(x=595, y=160)
 
 XjogEntryField = Entry(tab1,width=5)
-XjogEntryField.place(x=660, y=185)
+XjogEntryField.place(x=595, y=185)
 
 
    ### Y ###
 
 YcurEntryField = Entry(tab1,width=5)
-YcurEntryField.place(x=750, y=160)
+YcurEntryField.place(x=685, y=160)
 
 YjogEntryField = Entry(tab1,width=5)
-YjogEntryField.place(x=750, y=185)
+YjogEntryField.place(x=685, y=185)
 
 
    ### Z ###
 
 ZcurEntryField = Entry(tab1,width=5)
-ZcurEntryField.place(x=840, y=160)
+ZcurEntryField.place(x=775, y=160)
 
 ZjogEntryField = Entry(tab1,width=5)
-ZjogEntryField.place(x=840, y=185)
+ZjogEntryField.place(x=775, y=185)
 
 
    ### Rx ###
 
 RxcurEntryField = Entry(tab1,width=5)
-RxcurEntryField.place(x=930, y=160)
+RxcurEntryField.place(x=865, y=160)
 
 RxjogEntryField = Entry(tab1,width=5)
-RxjogEntryField.place(x=930, y=185)
+RxjogEntryField.place(x=865, y=185)
 
 
    ### Ry ###
 
 RycurEntryField = Entry(tab1,width=5)
-RycurEntryField.place(x=1020, y=160)
+RycurEntryField.place(x=955, y=160)
 
 RyjogEntryField = Entry(tab1,width=5)
-RyjogEntryField.place(x=1020, y=185)
+RyjogEntryField.place(x=955, y=185)
 
 
    ### Rz ###
 
 RzcurEntryField = Entry(tab1,width=5)
-RzcurEntryField.place(x=1110, y=160)
+RzcurEntryField.place(x=1045, y=160)
 
 RzjogEntryField = Entry(tab1,width=5)
-RzjogEntryField.place(x=1110, y=185)
+RzjogEntryField.place(x=1045, y=185)
 
 
 
    ### Track ###
 
 TrackcurEntryField = Entry(tab1,width=5)
-TrackcurEntryField.place(x=1230, y=160)
+TrackcurEntryField.place(x=1165, y=160)
 
 TrackjogEntryField = Entry(tab1,width=5)
-TrackjogEntryField.place(x=1230, y=185)
+TrackjogEntryField.place(x=1165, y=185)
 
 
 
@@ -5164,22 +5166,22 @@ TrackjogEntryField.place(x=1230, y=185)
 
 
 TXjogEntryField = Entry(tab1,width=5)
-TXjogEntryField.place(x=660, y=285)
+TXjogEntryField.place(x=595, y=285)
 
 TYjogEntryField = Entry(tab1,width=5)
-TYjogEntryField.place(x=750, y=285)
+TYjogEntryField.place(x=685, y=285)
 
 TZjogEntryField = Entry(tab1,width=5)
-TZjogEntryField.place(x=840, y=285)
+TZjogEntryField.place(x=775, y=285)
 
 TRxjogEntryField = Entry(tab1,width=5)
-TRxjogEntryField.place(x=930, y=285)
+TRxjogEntryField.place(x=865, y=285)
 
 TRyjogEntryField = Entry(tab1,width=5)
-TRyjogEntryField.place(x=1020, y=285)
+TRyjogEntryField.place(x=955, y=285)
 
 TRzjogEntryField = Entry(tab1,width=5)
-TRzjogEntryField.place(x=1110, y=285)
+TRzjogEntryField.place(x=1045, y=285)
 
 
 
@@ -5203,31 +5205,31 @@ TRzjogEntryField.place(x=1110, y=285)
 #############################################################################
 
 WorkFrameLab = Label(tab2, text = "Work Frame:")
-WorkFrameLab.place(x=990, y=40)
+WorkFrameLab.place(x=920, y=40)
 
 ToolFrameLab = Label(tab2, text = "Tool Frame:")
-ToolFrameLab.place(x=990, y=65)
+ToolFrameLab.place(x=920, y=65)
 
 UFxLab = Label(tab2, font=("Arial", 11), text = "X")
-UFxLab.place(x=1088, y=17)
+UFxLab.place(x=1018, y=17)
 
 UFyLab = Label(tab2, font=("Arial", 11), text = "Y")
-UFyLab.place(x=1128, y=17)
+UFyLab.place(x=1058, y=17)
 
 UFzLab = Label(tab2, font=("Arial", 11), text = "Z")
-UFzLab.place(x=1168, y=17)
+UFzLab.place(x=1098, y=17)
 
 UFRxLab = Label(tab2, font=("Arial", 11), text = "Rx")
-UFRxLab.place(x=1204, y=17)
+UFRxLab.place(x=1134, y=17)
 
 UFRyLab = Label(tab2, font=("Arial", 11), text = "Ry")
-UFRyLab.place(x=1244, y=17)
+UFRyLab.place(x=1174, y=17)
 
 UFRzLab = Label(tab2, font=("Arial", 11), text = "Rz")
-UFRzLab.place(x=1284, y=17)
+UFRzLab.place(x=1214, y=17)
 
 fineCalLab = Label(tab2, fg = "orange4", text = "Fine Calibration Position:")
-fineCalLab.place(x=10, y=83)
+fineCalLab.place(x=10, y=220)
 
 
 CalibrationValuesLab = Label(tab2, text = "Robot Calibration Values:")
@@ -5263,29 +5265,29 @@ J6StepLimLab = Label(tab2, text = "J6 Step Lim")
 
 
 
-J1NegAngLimLab.place(x=440, y=30)
-J1PosAngLimLab.place(x=440, y=55)
-J1StepLimLab.place(x=440, y=80)
+J1NegAngLimLab.place(x=455, y=30)
+J1PosAngLimLab.place(x=455, y=55)
+J1StepLimLab.place(x=455, y=80)
 
-J2NegAngLimLab.place(x=440, y=130)
-J2PosAngLimLab.place(x=440, y=155)
-J2StepLimLab.place(x=440, y=180)
+J2NegAngLimLab.place(x=455, y=115)
+J2PosAngLimLab.place(x=455, y=140)
+J2StepLimLab.place(x=455, y=165)
 
-J3NegAngLimLab.place(x=440, y=230)
-J3PosAngLimLab.place(x=440, y=255)
-J3StepLimLab.place(x=440, y=280)
+J3NegAngLimLab.place(x=455, y=200)
+J3PosAngLimLab.place(x=455, y=225)
+J3StepLimLab.place(x=455, y=250)
 
-J4NegAngLimLab.place(x=440, y=330)
-J4PosAngLimLab.place(x=440, y=355)
-J4StepLimLab.place(x=440, y=380)
+J4NegAngLimLab.place(x=455, y=285)
+J4PosAngLimLab.place(x=455, y=310)
+J4StepLimLab.place(x=455, y=335)
 
-J5NegAngLimLab.place(x=440, y=430)
-J5PosAngLimLab.place(x=440, y=455)
-J5StepLimLab.place(x=440, y=480)
+J5NegAngLimLab.place(x=455, y=370)
+J5PosAngLimLab.place(x=455, y=395)
+J5StepLimLab.place(x=455, y=420)
 
-J6NegAngLimLab.place(x=440, y=530)
-J6PosAngLimLab.place(x=440, y=555)
-J6StepLimLab.place(x=440, y=580)
+J6NegAngLimLab.place(x=455, y=455)
+J6PosAngLimLab.place(x=455, y=480)
+J6StepLimLab.place(x=455, y=505)
 
 
 
@@ -5293,8 +5295,8 @@ J6StepLimLab.place(x=440, y=580)
 TrackLengthLab = Label(tab2, text = "Track Length")
 TrackStepLimLab = Label(tab2, text = "Track Step Lim")
 
-TrackLengthLab.place(x=440, y=630)
-TrackStepLimLab.place(x=440, y=655)
+TrackLengthLab.place(x=455, y=540)
+TrackStepLimLab.place(x=455, y=565)
 
 
 
@@ -5329,55 +5331,55 @@ DHt6Lab = Label(tab2, text = "DH theta-6 (joint angle)")
 
 
 CalDirLab = Label(tab2, text = "Calibration Directions (default = 001001)")
-CalDirLab.place(x=70, y=340)
+CalDirLab.place(x=70, y=540)
 
 MotDirLab = Label(tab2, text = "Motor Direction Output (default = 000000)")
-MotDirLab.place(x=70, y=370)
+MotDirLab.place(x=70, y=570)
 
 ### 2 BUTTONS################################################################
 #############################################################################
 
 
-manCalBut = Button(tab2, bg="skyblue2", text="Auto Calibrate", height=1, width=20, command = calRobotAll)
+manCalBut = Button(tab2, bg="skyblue2", text="Auto Calibrate", height=1, width=25, command = calRobotAll)
 manCalBut.place(x=10, y=10)
 
-ForcCalBut = Button(tab2, bg="light salmon", text="Force Calibration to Mid Range", height=1, width=26, command = calRobotMid)
-ForcCalBut.place(x=170, y=10)
+ForcCalBut = Button(tab2, bg="light salmon", text="Force Calibration to Mid Range", height=1, width=25, command = calRobotMid)
+ForcCalBut.place(x=10, y=100)
 
-fineCalBut = Button(tab2, bg="khaki2", text="Execute Fine Calibratation", height=1, width=20, command = exeFineCalPos)
+fineCalBut = Button(tab2, bg="khaki2", text="Execute Fine Calibratation", height=1, width=25, command = exeFineCalPos)
 fineCalBut.place(x=10, y=40)
 
-teachfineCalBut = Button(tab2, bg="khaki2", text="Teach Fine Calibration Position", height=1, width=26, command = teachFineCal)
-teachfineCalBut.place(x=170, y=40)
+teachfineCalBut = Button(tab2, bg="khaki2", text="Teach Fine Calibration Position", height=1, width=25, command = teachFineCal)
+teachfineCalBut.place(x=10, y=130)
 
-gotofineCalBut = Button(tab2, bg="khaki2", text="Go To Fine Calibration Position", height=1, width=26, command = gotoFineCalPos)
-gotofineCalBut.place(x=170, y=70)
+gotofineCalBut = Button(tab2, bg="khaki2", text="Go To Fine Calibration Position", height=1, width=25, command = gotoFineCalPos)
+gotofineCalBut.place(x=10, y=160)
 
-saveCalBut = Button(tab2, bg="grey85", text="SAVE CALIBRATION DATA", height=1, width=26, command = SaveAndApplyCalibration)
-saveCalBut.place(x=1150, y=630)
-
-
-CalJ1But = Button(tab2,  bg="grey85", text="Calibrate J1 Only", height=1, width=20, command = calRobotJ1)
-CalJ1But.place(x=10, y=140)
-
-CalJ2But = Button(tab2,  bg="grey85", text="Calibrate J2 Only", height=1, width=20, command = calRobotJ2)
-CalJ2But.place(x=10, y=170)
-
-CalJ3But = Button(tab2,  bg="grey85", text="Calibrate J3 Only", height=1, width=20, command = calRobotJ3)
-CalJ3But.place(x=10, y=200)
-
-CalJ4But = Button(tab2,  bg="grey85", text="Calibrate J4 Only", height=1, width=20, command = calRobotJ4)
-CalJ4But.place(x=10, y=230)
-
-CalJ5But = Button(tab2,  bg="grey85", text="Calibrate J5 Only", height=1, width=20, command = calRobotJ5)
-CalJ5But.place(x=10, y=260)
-
-CalJ5But = Button(tab2,  bg="grey85", text="Calibrate J6 Only", height=1, width=20, command = calRobotJ6)
-CalJ5But.place(x=10, y=290)
+saveCalBut = Button(tab2, bg="grey85", text="SAVE CALIBRATION DATA", height=1, width=25, command = SaveAndApplyCalibration)
+saveCalBut.place(x=1000, y=560)
 
 
-CalTrackBut = Button(tab2,  bg="grey85", text="Calibrate Track to 0", height=1, width=20, command = CalTrackPos)
-CalTrackBut.place(x=170, y=140)
+CalJ1But = Button(tab2,  bg="grey85", text="Calibrate J1 Only", height=1, width=15, command = calRobotJ1)
+CalJ1But.place(x=10, y=300)
+
+CalJ2But = Button(tab2,  bg="grey85", text="Calibrate J2 Only", height=1, width=15, command = calRobotJ2)
+CalJ2But.place(x=10, y=330)
+
+CalJ3But = Button(tab2,  bg="grey85", text="Calibrate J3 Only", height=1, width=15, command = calRobotJ3)
+CalJ3But.place(x=10, y=360)
+
+CalJ4But = Button(tab2,  bg="grey85", text="Calibrate J4 Only", height=1, width=15, command = calRobotJ4)
+CalJ4But.place(x=10, y=390)
+
+CalJ5But = Button(tab2,  bg="grey85", text="Calibrate J5 Only", height=1, width=15, command = calRobotJ5)
+CalJ5But.place(x=10, y=420)
+
+CalJ5But = Button(tab2,  bg="grey85", text="Calibrate J6 Only", height=1, width=15, command = calRobotJ6)
+CalJ5But.place(x=10, y=450)
+
+
+CalTrackBut = Button(tab2,  bg="grey85", text="Calibrate Track to 0", height=1, width=15, command = CalTrackPos)
+CalTrackBut.place(x=170, y=300)
 
 
 #### 2 ENTRY FIELDS##########################################################
@@ -5385,39 +5387,39 @@ CalTrackBut.place(x=170, y=140)
 
    ### User Frame ###
 
-UFxEntryField = Entry(tab2,width=5)
-UFxEntryField.place(x=1080, y=40)
-UFyEntryField = Entry(tab2,width=5)
-UFyEntryField.place(x=1120, y=40)
-UFzEntryField = Entry(tab2,width=5)
-UFzEntryField.place(x=1160, y=40)
-UFrxEntryField = Entry(tab2,width=5)
-UFrxEntryField.place(x=1200, y=40)
-UFryEntryField = Entry(tab2,width=5)
-UFryEntryField.place(x=1240, y=40)
-UFrzEntryField = Entry(tab2,width=5)
-UFrzEntryField.place(x=1280, y=40)
+UFxEntryField = Entry(tab2,width=4)
+UFxEntryField.place(x=1005, y=40)
+UFyEntryField = Entry(tab2,width=4)
+UFyEntryField.place(x=1045, y=40)
+UFzEntryField = Entry(tab2,width=4)
+UFzEntryField.place(x=1085, y=40)
+UFrxEntryField = Entry(tab2,width=4)
+UFrxEntryField.place(x=1125, y=40)
+UFryEntryField = Entry(tab2,width=4)
+UFryEntryField.place(x=1165, y=40)
+UFrzEntryField = Entry(tab2,width=4)
+UFrzEntryField.place(x=1205, y=40)
 
 
 
    ### Tool Frame ###
 
-TFxEntryField = Entry(tab2,width=5)
-TFxEntryField.place(x=1080, y=65)
-TFyEntryField = Entry(tab2,width=5)
-TFyEntryField.place(x=1120, y=65)
-TFzEntryField = Entry(tab2,width=5)
-TFzEntryField.place(x=1160, y=65)
-TFrxEntryField = Entry(tab2,width=5)
-TFrxEntryField.place(x=1200, y=65)
-TFryEntryField = Entry(tab2,width=5)
-TFryEntryField.place(x=1240, y=65)
-TFrzEntryField = Entry(tab2,width=5)
-TFrzEntryField.place(x=1280, y=65)
+TFxEntryField = Entry(tab2,width=4)
+TFxEntryField.place(x=1005, y=65)
+TFyEntryField = Entry(tab2,width=4)
+TFyEntryField.place(x=1045, y=65)
+TFzEntryField = Entry(tab2,width=4)
+TFzEntryField.place(x=1085, y=65)
+TFrxEntryField = Entry(tab2,width=4)
+TFrxEntryField.place(x=1125, y=65)
+TFryEntryField = Entry(tab2,width=4)
+TFryEntryField.place(x=1165, y=65)
+TFrzEntryField = Entry(tab2,width=4)
+TFrzEntryField.place(x=1205, y=65)
 
 
-fineCalEntryField = Entry(tab2,fg="orange4",bg="khaki2",width=58)
-fineCalEntryField.place(x=10, y=103)
+fineCalEntryField = Entry(tab2,fg="orange4",bg="khaki2",width=40)
+fineCalEntryField.place(x=10, y=240)
 
 
 
@@ -5450,25 +5452,25 @@ J1NegAngLimEntryField.place(x=380, y=30)
 J1PosAngLimEntryField.place(x=380, y=55)
 J1StepLimEntryField.place(x=380, y=80)
 
-J2NegAngLimEntryField.place(x=380, y=130)
-J2PosAngLimEntryField.place(x=380, y=155)
-J2StepLimEntryField.place(x=380, y=180)
+J2NegAngLimEntryField.place(x=380, y=115)
+J2PosAngLimEntryField.place(x=380, y=140)
+J2StepLimEntryField.place(x=380, y=165)
 
-J3NegAngLimEntryField.place(x=380, y=230)
-J3PosAngLimEntryField.place(x=380, y=255)
-J3StepLimEntryField.place(x=380, y=280)
+J3NegAngLimEntryField.place(x=380, y=200)
+J3PosAngLimEntryField.place(x=380, y=225)
+J3StepLimEntryField.place(x=380, y=250)
 
-J4NegAngLimEntryField.place(x=380, y=330)
-J4PosAngLimEntryField.place(x=380, y=355)
-J4StepLimEntryField.place(x=380, y=380)
+J4NegAngLimEntryField.place(x=380, y=285)
+J4PosAngLimEntryField.place(x=380, y=310)
+J4StepLimEntryField.place(x=380, y=335)
 
-J5NegAngLimEntryField.place(x=380, y=430)
-J5PosAngLimEntryField.place(x=380, y=455)
-J5StepLimEntryField.place(x=380, y=480)
+J5NegAngLimEntryField.place(x=380, y=370)
+J5PosAngLimEntryField.place(x=380, y=395)
+J5StepLimEntryField.place(x=380, y=420)
 
-J6NegAngLimEntryField.place(x=380, y=530)
-J6PosAngLimEntryField.place(x=380, y=555)
-J6StepLimEntryField.place(x=380, y=580)
+J6NegAngLimEntryField.place(x=380, y=455)
+J6PosAngLimEntryField.place(x=380, y=480)
+J6StepLimEntryField.place(x=380, y=505)
 
 
 
@@ -5477,8 +5479,8 @@ J6StepLimEntryField.place(x=380, y=580)
 TrackLengthEntryField = Entry(tab2,width=8)
 TrackStepLimEntryField = Entry(tab2,width=8)
 
-TrackLengthEntryField.place(x=380, y=630)
-TrackStepLimEntryField.place(x=380, y=655)
+TrackLengthEntryField.place(x=380, y=540)
+TrackStepLimEntryField.place(x=380, y=565)
 
 
 
@@ -5575,10 +5577,10 @@ DHt6Lab.place(x=710, y=605)
 
 
 CalDirEntryField = Entry(tab2,width=6)
-CalDirEntryField.place(x=10, y=340)
+CalDirEntryField.place(x=10, y=540)
 
 MotDirEntryField = Entry(tab2,width=6)
-MotDirEntryField.place(x=10, y=370)
+MotDirEntryField.place(x=10, y=570)
 
 
 
@@ -5593,70 +5595,70 @@ MotDirEntryField.place(x=10, y=370)
 #############################################################################
 
 servo0onequalsLab = Label(tab3, text = "=")
-servo0onequalsLab.place(x=70, y=12)
+servo0onequalsLab.place(x=90, y=12)
 
 servo0offequalsLab = Label(tab3, text = "=")
-servo0offequalsLab.place(x=70, y=52)
+servo0offequalsLab.place(x=90, y=52)
 
 servo1onequalsLab = Label(tab3, text = "=")
-servo1onequalsLab.place(x=70, y=92)
+servo1onequalsLab.place(x=90, y=92)
 
 servo1offequalsLab = Label(tab3, text = "=")
-servo1offequalsLab.place(x=70, y=132)
+servo1offequalsLab.place(x=90, y=132)
 
 servo2onequalsLab = Label(tab3, text = "=")
-servo2onequalsLab.place(x=70, y=172)
+servo2onequalsLab.place(x=90, y=172)
 
 servo2offequalsLab = Label(tab3, text = "=")
-servo2offequalsLab.place(x=70, y=212)
+servo2offequalsLab.place(x=90, y=212)
 
 servo3onequalsLab = Label(tab3, text = "=")
-servo3onequalsLab.place(x=70, y=252)
+servo3onequalsLab.place(x=90, y=252)
 
 servo3offequalsLab = Label(tab3, text = "=")
-servo3offequalsLab.place(x=70, y=292)
+servo3offequalsLab.place(x=90, y=292)
 
 
 
 Do1onequalsLab = Label(tab3, text = "=")
-Do1onequalsLab.place(x=210, y=12)
+Do1onequalsLab.place(x=270, y=15)
 
 Do1offequalsLab = Label(tab3, text = "=")
-Do1offequalsLab.place(x=210, y=52)
+Do1offequalsLab.place(x=270, y=55)
 
 Do2onequalsLab = Label(tab3, text = "=")
-Do2onequalsLab.place(x=210, y=92)
+Do2onequalsLab.place(x=270, y=95)
 
 Do2offequalsLab = Label(tab3, text = "=")
-Do2offequalsLab.place(x=210, y=132)
+Do2offequalsLab.place(x=270, y=135)
 
 Do3onequalsLab = Label(tab3, text = "=")
-Do3onequalsLab.place(x=210, y=172)
+Do3onequalsLab.place(x=270, y=175)
 
 Do3offequalsLab = Label(tab3, text = "=")
-Do3offequalsLab.place(x=210, y=212)
+Do3offequalsLab.place(x=270, y=215)
 
 Do4onequalsLab = Label(tab3, text = "=")
-Do4onequalsLab.place(x=210, y=252)
+Do4onequalsLab.place(x=270, y=255)
 
 Do4offequalsLab = Label(tab3, text = "=")
-Do4offequalsLab.place(x=210, y=292)
+Do4offequalsLab.place(x=270, y=295)
 
 Do5onequalsLab = Label(tab3, text = "=")
-Do5onequalsLab.place(x=210, y=332)
+Do5onequalsLab.place(x=270, y=335)
 
 Do5offequalsLab = Label(tab3, text = "=")
-Do5offequalsLab.place(x=210, y=372)
+Do5offequalsLab.place(x=270, y=375)
 
 Do6onequalsLab = Label(tab3, text = "=")
-Do6onequalsLab.place(x=210, y=412)
+Do6onequalsLab.place(x=270, y=415)
 
 Do6offequalsLab = Label(tab3, text = "=")
-Do6offequalsLab.place(x=210, y=452)
+Do6offequalsLab.place(x=270, y=455)
 
 
 inoutavailLab = Label(tab3, text = "NOTE: the following are available IO's on the Arduino Mega:       Inputs = 22-37  /  Outputs = 38-53  /  Servos = A0-A7")
-inoutavailLab.place(x=10, y=645)
+inoutavailLab.place(x=10, y=580)
 
 
 ### 3 BUTTONS################################################################
@@ -5691,40 +5693,40 @@ servo3offBut.place(x=10, y=290)
 
 
 DO1onBut = Button(tab3, bg="light blue", text="DO on", height=1, width=6, command = DO1on)
-DO1onBut.place(x=150, y=10)
+DO1onBut.place(x=190, y=10)
 
 DO1offBut = Button(tab3, bg="light blue", text="DO off", height=1, width=6, command = DO1off)
-DO1offBut.place(x=150, y=50)
+DO1offBut.place(x=190, y=50)
 
 DO2onBut = Button(tab3, bg="light blue", text="DO on", height=1, width=6, command = DO2on)
-DO2onBut.place(x=150, y=90)
+DO2onBut.place(x=190, y=90)
 
 DO2offBut = Button(tab3, bg="light blue", text="DO off", height=1, width=6, command = DO2off)
-DO2offBut.place(x=150, y=130)
+DO2offBut.place(x=190, y=130)
 
 DO3onBut = Button(tab3, bg="light blue", text="DO on", height=1, width=6, command = DO3on)
-DO3onBut.place(x=150, y=170)
+DO3onBut.place(x=190, y=170)
 
 DO3offBut = Button(tab3, bg="light blue", text="DO off", height=1, width=6, command = DO3off)
-DO3offBut.place(x=150, y=210)
+DO3offBut.place(x=190, y=210)
 
 DO4onBut = Button(tab3, bg="light blue", text="DO on", height=1, width=6, command = DO4on)
-DO4onBut.place(x=150, y=250)
+DO4onBut.place(x=190, y=250)
 
 DO4offBut = Button(tab3, bg="light blue", text="DO off", height=1, width=6, command = DO4off)
-DO4offBut.place(x=150, y=290)
+DO4offBut.place(x=190, y=290)
 
 DO5onBut = Button(tab3, bg="light blue", text="DO on", height=1, width=6, command = DO5on)
-DO5onBut.place(x=150, y=330)
+DO5onBut.place(x=190, y=330)
 
 DO5offBut = Button(tab3, bg="light blue", text="DO off", height=1, width=6, command = DO5off)
-DO5offBut.place(x=150, y=370)
+DO5offBut.place(x=190, y=370)
 
 DO6onBut = Button(tab3, bg="light blue", text="DO on", height=1, width=6, command = DO6on)
-DO6onBut.place(x=150, y=410)
+DO6onBut.place(x=190, y=410)
 
 DO6offBut = Button(tab3, bg="light blue", text="DO off", height=1, width=6, command = DO6off)
-DO6offBut.place(x=150, y=450)
+DO6offBut.place(x=190, y=450)
 
 
 
@@ -5733,69 +5735,68 @@ DO6offBut.place(x=150, y=450)
 
 
 servo0onEntryField = Entry(tab3,width=5)
-servo0onEntryField.place(x=90, y=15)
+servo0onEntryField.place(x=110, y=15)
 
 servo0offEntryField = Entry(tab3,width=5)
-servo0offEntryField.place(x=90, y=55)
+servo0offEntryField.place(x=110, y=55)
 
 servo1onEntryField = Entry(tab3,width=5)
-servo1onEntryField.place(x=90, y=95)
+servo1onEntryField.place(x=110, y=95)
 
 servo1offEntryField = Entry(tab3,width=5)
-servo1offEntryField.place(x=90, y=135)
+servo1offEntryField.place(x=110, y=135)
 
 servo2onEntryField = Entry(tab3,width=5)
-servo2onEntryField.place(x=90, y=175)
+servo2onEntryField.place(x=110, y=175)
 
 servo2offEntryField = Entry(tab3,width=5)
-servo2offEntryField.place(x=90, y=215)
-
+servo2offEntryField.place(x=110, y=215)
 
 servo3onEntryField = Entry(tab3,width=5)
-servo3onEntryField.place(x=90, y=255)
+servo3onEntryField.place(x=110, y=255)
 
 servo3offEntryField = Entry(tab3,width=5)
-servo3offEntryField.place(x=90, y=295)
+servo3offEntryField.place(x=110, y=295)
 
 
 
 
 
 DO1onEntryField = Entry(tab3,width=5)
-DO1onEntryField.place(x=230, y=15)
+DO1onEntryField.place(x=290, y=15)
 
 DO1offEntryField = Entry(tab3,width=5)
-DO1offEntryField.place(x=230, y=55)
+DO1offEntryField.place(x=290, y=55)
 
 DO2onEntryField = Entry(tab3,width=5)
-DO2onEntryField.place(x=230, y=95)
+DO2onEntryField.place(x=290, y=95)
 
 DO2offEntryField = Entry(tab3,width=5)
-DO2offEntryField.place(x=230, y=135)
+DO2offEntryField.place(x=290, y=135)
 
 DO3onEntryField = Entry(tab3,width=5)
-DO3onEntryField.place(x=230, y=175)
+DO3onEntryField.place(x=290, y=175)
 
 DO3offEntryField = Entry(tab3,width=5)
-DO3offEntryField.place(x=230, y=215)
+DO3offEntryField.place(x=290, y=215)
 
 DO4onEntryField = Entry(tab3,width=5)
-DO4onEntryField.place(x=230, y=255)
+DO4onEntryField.place(x=290, y=255)
 
 DO4offEntryField = Entry(tab3,width=5)
-DO4offEntryField.place(x=230, y=295)
+DO4offEntryField.place(x=290, y=295)
 
 DO5onEntryField = Entry(tab3,width=5)
-DO5onEntryField.place(x=230, y=335)
+DO5onEntryField.place(x=290, y=335)
 
 DO5offEntryField = Entry(tab3,width=5)
-DO5offEntryField.place(x=230, y=375)
+DO5offEntryField.place(x=290, y=375)
 
 DO6onEntryField = Entry(tab3,width=5)
-DO6onEntryField.place(x=230, y=415)
+DO6onEntryField.place(x=290, y=415)
 
 DO6offEntryField = Entry(tab3,width=5)
-DO6offEntryField.place(x=230, y=455)
+DO6offEntryField.place(x=290, y=455)
 
 
 
@@ -5811,101 +5812,101 @@ DO6offEntryField.place(x=230, y=455)
 #############################################################################
 
 R1Lab = Label(tab4, text = "R1")
-R1Lab.place(x=70, y=30)
+R1Lab.place(x=30, y=30)
 
 R2Lab = Label(tab4, text = "R2")
-R2Lab.place(x=70, y=60)
+R2Lab.place(x=30, y=60)
 
 R3Lab = Label(tab4, text = "R3")
-R3Lab.place(x=70, y=90)
+R3Lab.place(x=30, y=90)
 
 R4Lab = Label(tab4, text = "R4")
-R4Lab.place(x=70, y=120)
+R4Lab.place(x=30, y=120)
 
 R5Lab = Label(tab4, text = "R5")
-R5Lab.place(x=70, y=150)
+R5Lab.place(x=30, y=150)
 
 R6Lab = Label(tab4, text = "R6")
-R6Lab.place(x=70, y=180)
+R6Lab.place(x=30, y=180)
 
 R7Lab = Label(tab4, text = "R7")
-R7Lab.place(x=70, y=210)
+R7Lab.place(x=30, y=210)
 
 R8Lab = Label(tab4, text = "R8")
-R8Lab.place(x=70, y=240)
+R8Lab.place(x=30, y=240)
 
 R9Lab = Label(tab4, text = "R9")
-R9Lab.place(x=70, y=270)
+R9Lab.place(x=30, y=270)
 
 R10Lab = Label(tab4, text = "R10")
-R10Lab.place(x=70, y=300)
+R10Lab.place(x=30, y=300)
 
 R11Lab = Label(tab4, text = "R11")
-R11Lab.place(x=70, y=330)
+R11Lab.place(x=30, y=330)
 
 R12Lab = Label(tab4, text = "R12")
-R12Lab.place(x=70, y=360)
+R12Lab.place(x=30, y=360)
 
 R13Lab = Label(tab4, text = "R14")
-R13Lab.place(x=70, y=390)
+R13Lab.place(x=30, y=390)
 
 R14Lab = Label(tab4, text = "R14")
-R14Lab.place(x=70, y=420)
+R14Lab.place(x=30, y=420)
 
 R15Lab = Label(tab4, text = "R15")
-R15Lab.place(x=70, y=450)
+R15Lab.place(x=30, y=450)
 
 R16Lab = Label(tab4, text = "R16")
-R16Lab.place(x=70, y=480)
+R16Lab.place(x=30, y=480)
 
 
 SP1Lab = Label(tab4, text = "SP1 (vision)")
-SP1Lab.place(x=640, y=30)
+SP1Lab.place(x=320, y=30)
 
 SP2Lab = Label(tab4, text = "SP2")
-SP2Lab.place(x=640, y=60)
+SP2Lab.place(x=360, y=60)
 
 SP3Lab = Label(tab4, text = "SP3")
-SP3Lab.place(x=640, y=90)
+SP3Lab.place(x=360, y=90)
 
 SP4Lab = Label(tab4, text = "SP4")
-SP4Lab.place(x=640, y=120)
+SP4Lab.place(x=360, y=120)
 
 SP5Lab = Label(tab4, text = "SP5")
-SP5Lab.place(x=640, y=150)
+SP5Lab.place(x=360, y=150)
 
 SP6Lab = Label(tab4, text = "SP6")
-SP6Lab.place(x=640, y=180)
+SP6Lab.place(x=360, y=180)
 
 SP7Lab = Label(tab4, text = "SP7")
-SP7Lab.place(x=640, y=210)
+SP7Lab.place(x=360, y=210)
 
 SP8Lab = Label(tab4, text = "SP8")
-SP8Lab.place(x=640, y=240)
+SP8Lab.place(x=360, y=240)
 
 SP9Lab = Label(tab4, text = "SP9")
-SP9Lab.place(x=640, y=270)
+SP9Lab.place(x=360, y=270)
 
 SP10Lab = Label(tab4, text = "SP10")
-SP10Lab.place(x=640, y=300)
+SP10Lab.place(x=360, y=300)
 
 SP11Lab = Label(tab4, text = "SP11")
-SP11Lab.place(x=640, y=330)
+SP11Lab.place(x=360, y=330)
 
 SP12Lab = Label(tab4, text = "SP12")
-SP12Lab.place(x=640, y=360)
+SP12Lab.place(x=360, y=360)
 
 SP13Lab = Label(tab4, text = "SP14")
-SP13Lab.place(x=640, y=390)
+SP13Lab.place(x=360, y=390)
 
 SP14Lab = Label(tab4, text = "SP14")
-SP14Lab.place(x=640, y=420)
+SP14Lab.place(x=360, y=420)
 
 SP15Lab = Label(tab4, text = "SP15")
-SP15Lab.place(x=640, y=450)
+SP15Lab.place(x=360, y=450)
 
 SP16Lab = Label(tab4, text = "SP16")
-SP16Lab.place(x=640, y=480)
+SP16Lab.place(x=360, y=480)
 
 
 SP_E1_Lab = Label(tab4, text = "X")
@@ -5938,52 +5939,52 @@ SP_E6_Lab.place(x=610, y=10)
 #############################################################################
 
 R1EntryField = Entry(tab4,width=5)
-R1EntryField.place(x=30, y=30)
+R1EntryField.place(x=60, y=30)
 
 R2EntryField = Entry(tab4,width=5)
-R2EntryField.place(x=30, y=60)
+R2EntryField.place(x=60, y=60)
 
 R3EntryField = Entry(tab4,width=5)
-R3EntryField.place(x=30, y=90)
+R3EntryField.place(x=60, y=90)
 
 R4EntryField = Entry(tab4,width=5)
-R4EntryField.place(x=30, y=120)
+R4EntryField.place(x=60, y=120)
 
 R5EntryField = Entry(tab4,width=5)
-R5EntryField.place(x=30, y=150)
+R5EntryField.place(x=60, y=150)
 
 R6EntryField = Entry(tab4,width=5)
-R6EntryField.place(x=30, y=180)
+R6EntryField.place(x=60, y=180)
 
 R7EntryField = Entry(tab4,width=5)
-R7EntryField.place(x=30, y=210)
+R7EntryField.place(x=60, y=210)
 
 R8EntryField = Entry(tab4,width=5)
-R8EntryField.place(x=30, y=240)
+R8EntryField.place(x=60, y=240)
 
 R9EntryField = Entry(tab4,width=5)
-R9EntryField.place(x=30, y=270)
+R9EntryField.place(x=60, y=270)
 
 R10EntryField = Entry(tab4,width=5)
-R10EntryField.place(x=30, y=300)
+R10EntryField.place(x=60, y=300)
 
 R11EntryField = Entry(tab4,width=5)
-R11EntryField.place(x=30, y=330)
+R11EntryField.place(x=60, y=330)
 
 R12EntryField = Entry(tab4,width=5)
-R12EntryField.place(x=30, y=360)
+R12EntryField.place(x=60, y=360)
 
 R13EntryField = Entry(tab4,width=5)
-R13EntryField.place(x=30, y=390)
+R13EntryField.place(x=60, y=390)
 
 R14EntryField = Entry(tab4,width=5)
-R14EntryField.place(x=30, y=420)
+R14EntryField.place(x=60, y=420)
 
 R15EntryField = Entry(tab4,width=5)
-R15EntryField.place(x=30, y=450)
+R15EntryField.place(x=60, y=450)
 
 R16EntryField = Entry(tab4,width=5)
-R16EntryField.place(x=30, y=480)
+R16EntryField.place(x=60, y=480)
 
 
 
@@ -6320,16 +6321,16 @@ VisCalmmLab = Label(tab5, text = "Calibration Robot MM:")
 VisCalmmLab.place(x=10, y=105)
 
 VisCalOxLab = Label(tab5, text = "Orig: X")
-VisCalOxLab.place(x=150, y=42)
+VisCalOxLab.place(x=155, y=50)
 
 VisCalOyLab = Label(tab5, text = "Orig: Y")
-VisCalOyLab.place(x=210, y=42)
+VisCalOyLab.place(x=215, y=50)
 
 VisCalXLab = Label(tab5, text = "End: X")
-VisCalXLab.place(x=270, y=42)
+VisCalXLab.place(x=275, y=50)
 
 VisCalYLab = Label(tab5, text = "End: Y")
-VisCalYLab.place(x=330, y=42)
+VisCalYLab.place(x=335, y=50)
 
 
 
@@ -6337,19 +6338,19 @@ VisInTypeLab = Label(tab5, text = "Choose Vision Format")
 VisInTypeLab.place(x=500, y=38)
 
 VisXfoundLab = Label(tab5, text = "X found position (mm)")
-VisXfoundLab.place(x=540, y=100)
+VisXfoundLab.place(x=550, y=100)
 
 VisYfoundLab = Label(tab5, text = "Y found position (mm)")
-VisYfoundLab.place(x=540, y=130)
+VisYfoundLab.place(x=550, y=130)
 
 VisRZfoundLab = Label(tab5, text = "R found position (ang)")
-VisRZfoundLab.place(x=540, y=160)
+VisRZfoundLab.place(x=550, y=160)
 
 VisXpixfoundLab = Label(tab5, text = "X pixes returned from camera")
-VisXpixfoundLab.place(x=760, y=100)
+VisXpixfoundLab.place(x=770, y=100)
 
 VisYpixfoundLab = Label(tab5, text = "Y pixes returned from camera")
-VisYpixfoundLab.place(x=760, y=130)
+VisYpixfoundLab.place(x=770, y=130)
 
 ### 5 BUTTONS################################################################
 #############################################################################
@@ -6360,18 +6361,18 @@ menu.grid(row=2,column=2)
 menu.place(x=500, y=60)
 
 
-testvisBut = Button(tab5, bg="grey85", text="test", height=1, width=15, command = testvis)
+testvisBut = Button(tab5, bg="grey85", text="TEST", height=1, width=15, command = testvis)
 testvisBut.place(x=500, y=190)
 
 saveCalBut = Button(tab5, bg="grey85", text="SAVE VISION DATA", height=1, width=26, command = SaveAndApplyCalibration)
-saveCalBut.place(x=1150, y=630)
+saveCalBut.place(x=1000, y=580)
 
 
 #### 5 ENTRY FIELDS##########################################################
 #############################################################################
 
 VisFileLocEntryField = Entry(tab5,width=70)
-VisFileLocEntryField.place(x=125, y=12)
+VisFileLocEntryField.place(x=140, y=12)
 
 VisPicOxPEntryField = Entry(tab5,width=5)
 VisPicOxPEntryField.place(x=155, y=75)
@@ -6425,10 +6426,10 @@ calibration = Listbox(tab2,width=20,height=60)
 #calibration.place(x=160,y=170)
 
 try:
-  Cal = pickle.load(open("ARbot.cal","rb"))
+  Cal = pickle.load(open("/home/pi/Documents/AR2/RaspberryPi/ARbot.cal","rb"))
 except:
   Cal = "0"
-  pickle.dump(Cal,open("ARbot.cal","wb"))
+  pickle.dump(Cal,open("/home/pi/Documents/AR2/RaspberryPi/ARbot.cal","wb"))
 for item in Cal:
   calibration.insert(END,item)
 J1StepCur   =calibration.get("0")
@@ -6779,7 +6780,7 @@ AR2 ROBOT DESIGN FOR PROFIT.\n\
 \n\
 Copyright (c) 2017, Chris Annin"
 
-tkMessageBox.showwarning("AR2 License / Copyright notice", msg)
+#tkMessageBox.showwarning("AR2 License / Copyright notice", msg)
 
 tab1.mainloop()
 
