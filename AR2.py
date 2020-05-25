@@ -96,7 +96,7 @@ global xboxUse
 ### DEFINE TABS ############################################################
 ############################################################################
 
-nb = tkinter.ttk.Notebook(root, width=1360, height=700)
+nb = tkinter.ttk.Notebook(root, width=1350, height=690)
 nb.place(x=0, y=0)
 
 tab1 = tkinter.ttk.Frame(nb)
@@ -5467,7 +5467,7 @@ stopProgBut.config(image=stopPhoto,width="60",height="60")
 stopProgBut.place(x=200, y=80)
 
 fwdBut = Button(tab1, borderwidth=borderWidth, text="FWD", height=3, width=4, command = stepFwd)
-fwdBut.place(x=100, y=80)
+fwdBut.place(x=85, y=80)
 
 revBut = Button(tab1, borderwidth=borderWidth, text="REV", height=3, width=4, command = stepRev)
 revBut.place(x=150, y=80)
