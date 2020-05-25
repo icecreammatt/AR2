@@ -85,7 +85,7 @@ root.wm_title("AR2 software 2.0")
 #root.iconbitmap(r'AR2.ico')
 root.resizable(width=True, height=True)
 root.geometry('1360x720+0+0')
-root.attributes('-zoomed', False)
+#root.attributes('-zoomed', False)
 root.runTrue = 0
 
 global JogStepsStat
@@ -5381,13 +5381,13 @@ storPosequalsLab.place(x=1117, y=561)
 
 
 
-manInsBut = Button(tab1, borderwidth=borderWidth, text="Insert", height=1, width=6, relief=RAISED, command = manInsItem)
+manInsBut = Button(tab1, borderwidth=borderWidth, text="Insert", height=1, width=6, relief=RAISED, command = manInsItem, highlightbackground='#3E4149')
 manInsBut.place(x=1220, y=641)
 
-manRepBut = Button(tab1, borderwidth=borderWidth, text="Replace", height=1, width=6, command = manReplItem)
+manRepBut = Button(tab1, borderwidth=borderWidth, text="Replace", height=1, width=6, command = manReplItem, highlightbackground='#3E4149')
 manRepBut.place(x=1280, y=641)
 
-getSelBut = Button(tab1, borderwidth=borderWidth, text="Get Selected", height=1, width=10, command = getSel)
+getSelBut = Button(tab1, borderwidth=borderWidth, text="Get Selected", height=1, width=10, command = getSel, highlightbackground='#3E4149')
 getSelBut.place(x=540, y=641)
 
 options=StringVar(tab1)
@@ -5397,61 +5397,61 @@ menu.grid(row=2,column=2)
 menu.place(x=540, y=360)
 
 
-teachInsBut = Button(tab1, borderwidth=borderWidth,  text="Teach New Position", height=1, width=20, command = teachInsertBelSelected)
+teachInsBut = Button(tab1, borderwidth=borderWidth,  text="Teach New Position", height=1, width=20, command = teachInsertBelSelected, highlightbackground='#3E4149')
 teachInsBut.place(x=540, y=440)
 
-teachReplaceBut = Button(tab1, borderwidth=borderWidth, text="Modify Position", height=1, width=20, command = teachReplaceSelected)
+teachReplaceBut = Button(tab1, borderwidth=borderWidth, text="Modify Position", height=1, width=20, command = teachReplaceSelected, highlightbackground='#3E4149')
 teachReplaceBut.place(x=540, y=480)
 
-waitTimeBut = Button(tab1, borderwidth=borderWidth, text="Wait Time (seconds)", height=1, width=20, command = waitTime)
+waitTimeBut = Button(tab1, borderwidth=borderWidth, text="Wait Time (seconds)", height=1, width=20, command = waitTime, highlightbackground='#3E4149')
 waitTimeBut.place(x=700, y=360)
 
-waitInputOnBut = Button(tab1, borderwidth=borderWidth, text="Wait Input ON", height=1, width=20, command = waitInputOn)
+waitInputOnBut = Button(tab1, borderwidth=borderWidth, text="Wait Input ON", height=1, width=20, command = waitInputOn, highlightbackground='#3E4149')
 waitInputOnBut.place(x=700, y=400)
 
-waitInputOffBut = Button(tab1, borderwidth=borderWidth, text="Wait Input OFF", height=1, width=20, command = waitInputOff)
+waitInputOffBut = Button(tab1, borderwidth=borderWidth, text="Wait Input OFF", height=1, width=20, command = waitInputOff, highlightbackground='#3E4149')
 waitInputOffBut.place(x=700, y=440)
 
-setOutputOnBut = Button(tab1, borderwidth=borderWidth, text="Set Output On", height=1, width=20, command = setOutputOn)
+setOutputOnBut = Button(tab1, borderwidth=borderWidth, text="Set Output On", height=1, width=20, command = setOutputOn, highlightbackground='#3E4149')
 setOutputOnBut.place(x=700, y=480)
 
-setOutputOffBut = Button(tab1, borderwidth=borderWidth, text="Set Output OFF", height=1, width=20, command = setOutputOff)
+setOutputOffBut = Button(tab1, borderwidth=borderWidth, text="Set Output OFF", height=1, width=20, command = setOutputOff, highlightbackground='#3E4149')
 setOutputOffBut.place(x=700, y=520)
 
-tabNumBut = Button(tab1, borderwidth=borderWidth, text="Create Tab", height=1, width=14, command = tabNumber)
+tabNumBut = Button(tab1, borderwidth=borderWidth, text="Create Tab", height=1, width=14, command = tabNumber, highlightbackground='#3E4149')
 tabNumBut.place(x=1175, y=360)
 
-jumpTabBut = Button(tab1, borderwidth=borderWidth, text="Jump to Tab", height=1, width=14, command = jumpTab)
+jumpTabBut = Button(tab1, borderwidth=borderWidth, text="Jump to Tab", height=1, width=14, command = jumpTab, highlightbackground='#3E4149')
 jumpTabBut.place(x=1175, y=400)
 
-getVisBut = Button(tab1, borderwidth=borderWidth, text="Get Vision", height=1, width=14, command = getvision)
+getVisBut = Button(tab1, borderwidth=borderWidth, text="Get Vision", height=1, width=14, command = getvision, highlightbackground='#3E4149')
 getVisBut.place(x=1175, y=440)
 
-IfOnjumpTabBut = Button(tab1, borderwidth=borderWidth, text="If On Jump", height=1, width=20, command = IfOnjumpTab)
+IfOnjumpTabBut = Button(tab1, borderwidth=borderWidth, text="If On Jump", height=1, width=20, command = IfOnjumpTab, highlightbackground='#3E4149')
 IfOnjumpTabBut.place(x=920, y=360)
 
-IfOffjumpTabBut = Button(tab1, borderwidth=borderWidth, text="If Off Jump", height=1, width=20, command = IfOffjumpTab)
+IfOffjumpTabBut = Button(tab1, borderwidth=borderWidth, text="If Off Jump", height=1, width=20, command = IfOffjumpTab, highlightbackground='#3E4149')
 IfOffjumpTabBut.place(x=920, y=400)
 
-servoBut = Button(tab1, borderwidth=borderWidth, text="Servo", height=1, width=20, command = Servo)
+servoBut = Button(tab1, borderwidth=borderWidth, text="Servo", height=1, width=20, command = Servo, highlightbackground='#3E4149')
 servoBut.place(x=920, y=440)
 
-callBut = Button(tab1, borderwidth=borderWidth, text="Call Program", height=1, width=20, command = insertCallProg)
+callBut = Button(tab1, borderwidth=borderWidth, text="Call Program", height=1, width=20, command = insertCallProg, highlightbackground='#3E4149')
 callBut.place(x=540, y=560)
 
-returnBut = Button(tab1, borderwidth=borderWidth, text="Return", height=1, width=20, command = insertReturn)
+returnBut = Button(tab1, borderwidth=borderWidth, text="Return", height=1, width=20, command = insertReturn, highlightbackground='#3E4149')
 returnBut.place(x=540, y=600)
 
-comPortBut = Button(tab1, borderwidth=borderWidth, text="Set Com", height=0, width=7, command = setCom)
+comPortBut = Button(tab1, borderwidth=borderWidth, text="Set Com", height=0, width=7, command = setCom, highlightbackground='#3E4149')
 comPortBut.place(x=103, y=7)
 
-ProgBut = Button(tab1, borderwidth=borderWidth, text="Load Program", height=0, width=12, command = loadProg)
+ProgBut = Button(tab1, borderwidth=borderWidth, text="Load Program", height=0, width=12, command = loadProg, highlightbackground='#3E4149')
 ProgBut.place(x=202, y=42)
 
-deleteBut = Button(tab1, borderwidth=borderWidth, text="Delete", height=1, width=20, command = deleteitem)
+deleteBut = Button(tab1, borderwidth=borderWidth, text="Delete", height=1, width=20, command = deleteitem, highlightbackground='#3E4149')
 deleteBut.place(x=540, y=520)
 
-runProgBut = Button(tab1, borderwidth=borderWidth, height=60, width=60, command = runProg)
+runProgBut = Button(tab1, borderwidth=borderWidth, height=60, width=60, command = runProg, highlightbackground='#3E4149')
 playPhoto=PhotoImage(file="play-icon.gif")
 runProgBut.config(image=playPhoto,width="60",height="60")
 runProgBut.place(x=20, y=80)
@@ -5461,104 +5461,104 @@ runProgBut.place(x=20, y=80)
 #xboxBut.config(image=xboxPhoto,width="60",height="43")
 #xboxBut.place(x=1225, y=42)
 
-stopProgBut = Button(tab1, borderwidth=borderWidth, height=60, width=60, command = stopProg)
+stopProgBut = Button(tab1, borderwidth=borderWidth, height=60, width=60, command = stopProg, highlightbackground='#3E4149')
 stopPhoto=PhotoImage(file="stop-icon.gif")
 stopProgBut.config(image=stopPhoto,width="60",height="60")
 stopProgBut.place(x=200, y=80)
 
-fwdBut = Button(tab1, borderwidth=borderWidth, text="FWD", height=3, width=4, command = stepFwd)
+fwdBut = Button(tab1, borderwidth=borderWidth, text="FWD", height=3, width=4, command = stepFwd, highlightbackground='#3E4149')
 fwdBut.place(x=85, y=80)
 
-revBut = Button(tab1, borderwidth=borderWidth, text="REV", height=3, width=4, command = stepRev)
+revBut = Button(tab1, borderwidth=borderWidth, text="REV", height=3, width=4, command = stepRev, highlightbackground='#3E4149')
 revBut.place(x=150, y=80)
 
-RegNumBut = Button(tab1, borderwidth=borderWidth, text="Register", height=1, width=20, command = insertRegister)
+RegNumBut = Button(tab1, borderwidth=borderWidth, text="Register", height=1, width=20, command = insertRegister, highlightbackground='#3E4149')
 RegNumBut.place(x=920, y=480)
 
-RegJmpBut = Button(tab1, borderwidth=borderWidth, text="If Register Jump", height=1, width=20, command = IfRegjumpTab)
+RegJmpBut = Button(tab1, borderwidth=borderWidth, text="If Register Jump", height=1, width=20, command = IfRegjumpTab, highlightbackground='#3E4149')
 RegJmpBut.place(x=920, y=520)
 
-CalibrateBut = Button(tab1, borderwidth=borderWidth, text="Auto Calibrate CMD", height=1, width=20, command = insCalibrate)
+CalibrateBut = Button(tab1, borderwidth=borderWidth, text="Auto Calibrate CMD", height=1, width=20, command = insCalibrate, highlightbackground='#3E4149')
 CalibrateBut.place(x=700, y=600)
 
-J1jogNegBut = Button(tab1, borderwidth=borderWidth, text="-", height=1, width=3, command = J1jogNeg)
+J1jogNegBut = Button(tab1, borderwidth=borderWidth, text="-", height=1, width=3, command = J1jogNeg, highlightbackground='#3E4149')
 J1jogNegBut.place(x=642, y=90)
 
-J1jogPosBut = Button(tab1, borderwidth=borderWidth,text="+", height=1, width=3, command = J1jogPos)
+J1jogPosBut = Button(tab1, borderwidth=borderWidth,text="+", height=1, width=3, command = J1jogPos, highlightbackground='#3E4149')
 J1jogPosBut.place(x=680, y=90)
 
-J2jogNegBut = Button(tab1, borderwidth=borderWidth,text="-", height=1, width=3, command = J2jogNeg)
+J2jogNegBut = Button(tab1, borderwidth=borderWidth,text="-", height=1, width=3, command = J2jogNeg, highlightbackground='#3E4149')
 J2jogNegBut.place(x=732, y=90)
 
-J2jogPosBut = Button(tab1, borderwidth=borderWidth,text="+", height=1, width=3, command = J2jogPos)
+J2jogPosBut = Button(tab1, borderwidth=borderWidth,text="+", height=1, width=3, command = J2jogPos, highlightbackground='#3E4149')
 J2jogPosBut.place(x=770, y=90)
 
-J3jogNegBut = Button(tab1, borderwidth=borderWidth,text="-", height=1, width=3, command = J3jogNeg)
+J3jogNegBut = Button(tab1, borderwidth=borderWidth,text="-", height=1, width=3, command = J3jogNeg, highlightbackground='#3E4149')
 J3jogNegBut.place(x=822, y=90)
 
-J3jogPosBut = Button(tab1, borderwidth=borderWidth,text="+", height=1, width=3, command = J3jogPos)
+J3jogPosBut = Button(tab1, borderwidth=borderWidth,text="+", height=1, width=3, command = J3jogPos, highlightbackground='#3E4149')
 J3jogPosBut.place(x=860, y=90)
 
-J4jogNegBut = Button(tab1, borderwidth=borderWidth,text="-", height=1, width=3, command = J4jogNeg)
+J4jogNegBut = Button(tab1, borderwidth=borderWidth,text="-", height=1, width=3, command = J4jogNeg, highlightbackground='#3E4149')
 J4jogNegBut.place(x=912, y=90)
 
-J4jogPosBut = Button(tab1, borderwidth=borderWidth,text="+", height=1, width=3, command = J4jogPos)
+J4jogPosBut = Button(tab1, borderwidth=borderWidth,text="+", height=1, width=3, command = J4jogPos, highlightbackground='#3E4149')
 J4jogPosBut.place(x=950, y=90)
 
-J5jogNegBut = Button(tab1, borderwidth=borderWidth,text="-", height=1, width=3, command = J5jogNeg)
+J5jogNegBut = Button(tab1, borderwidth=borderWidth,text="-", height=1, width=3, command = J5jogNeg, highlightbackground='#3E4149')
 J5jogNegBut.place(x=1002, y=90)
 
-J5jogPosBut = Button(tab1, borderwidth=borderWidth,text="+", height=1, width=3, command = J5jogPos)
+J5jogPosBut = Button(tab1, borderwidth=borderWidth,text="+", height=1, width=3, command = J5jogPos, highlightbackground='#3E4149')
 J5jogPosBut.place(x=1040, y=90)
 
-J6jogNegBut = Button(tab1, borderwidth=borderWidth,text="-", height=1, width=3, command = J6jogNeg)
+J6jogNegBut = Button(tab1, borderwidth=borderWidth,text="-", height=1, width=3, command = J6jogNeg, highlightbackground='#3E4149')
 J6jogNegBut.place(x=1092, y=90)
 
-J6jogPosBut = Button(tab1, borderwidth=borderWidth,text="+", height=1, width=3, command = J6jogPos)
+J6jogPosBut = Button(tab1, borderwidth=borderWidth,text="+", height=1, width=3, command = J6jogPos, highlightbackground='#3E4149')
 J6jogPosBut.place(x=1130, y=90)
 
-XjogNegBut = Button(tab1, borderwidth=borderWidth,text="-", height=1, width=3, command = XjogNeg)
+XjogNegBut = Button(tab1, borderwidth=borderWidth,text="-", height=1, width=3, command = XjogNeg, highlightbackground='#3E4149')
 XjogNegBut.place(x=642, y=210)
 
-XjogPosBut = Button(tab1, borderwidth=borderWidth,text="+", height=1, width=3, command = XjogPos)
+XjogPosBut = Button(tab1, borderwidth=borderWidth,text="+", height=1, width=3, command = XjogPos, highlightbackground='#3E4149')
 XjogPosBut.place(x=680, y=210)
 
-YjogNegBut = Button(tab1, borderwidth=borderWidth,text="-", height=1, width=3, command = YjogNeg)
+YjogNegBut = Button(tab1, borderwidth=borderWidth,text="-", height=1, width=3, command = YjogNeg, highlightbackground='#3E4149')
 YjogNegBut.place(x=732, y=210)
 
-YjogPosBut = Button(tab1, borderwidth=borderWidth,text="+", height=1, width=3, command = YjogPos)
+YjogPosBut = Button(tab1, borderwidth=borderWidth,text="+", height=1, width=3, command = YjogPos, highlightbackground='#3E4149')
 YjogPosBut.place(x=770, y=210)
 
-ZjogNegBut = Button(tab1, borderwidth=borderWidth,text="-", height=1, width=3, command = ZjogNeg)
+ZjogNegBut = Button(tab1, borderwidth=borderWidth,text="-", height=1, width=3, command = ZjogNeg, highlightbackground='#3E4149')
 ZjogNegBut.place(x=822, y=210)
 
-ZjogPosBut = Button(tab1, borderwidth=borderWidth,text="+", height=1, width=3, command = ZjogPos)
+ZjogPosBut = Button(tab1, borderwidth=borderWidth,text="+", height=1, width=3, command = ZjogPos, highlightbackground='#3E4149')
 ZjogPosBut.place(x=860, y=210)
 
-RxjogNegBut = Button(tab1, borderwidth=borderWidth,text="-", height=1, width=3, command = RxjogNeg)
+RxjogNegBut = Button(tab1, borderwidth=borderWidth,text="-", height=1, width=3, command = RxjogNeg, highlightbackground='#3E4149')
 RxjogNegBut.place(x=912, y=210)
 
-RxjogPosBut = Button(tab1, borderwidth=borderWidth,text="+", height=1, width=3, command = RxjogPos)
+RxjogPosBut = Button(tab1, borderwidth=borderWidth,text="+", height=1, width=3, command = RxjogPos, highlightbackground='#3E4149')
 RxjogPosBut.place(x=950, y=210)
 
-RyjogNegBut = Button(tab1, borderwidth=borderWidth,text="-", height=1, width=3, command = RyjogNeg)
+RyjogNegBut = Button(tab1, borderwidth=borderWidth,text="-", height=1, width=3, command = RyjogNeg, highlightbackground='#3E4149')
 RyjogNegBut.place(x=1002, y=210)
 
-RyjogPosBut = Button(tab1, borderwidth=borderWidth,text="+", height=1, width=3, command = RyjogPos)
+RyjogPosBut = Button(tab1, borderwidth=borderWidth,text="+", height=1, width=3, command = RyjogPos, highlightbackground='#3E4149')
 RyjogPosBut.place(x=1040, y=210)
 
-RzjogNegBut = Button(tab1, borderwidth=borderWidth,text="-", height=1, width=3, command = RzjogNeg)
+RzjogNegBut = Button(tab1, borderwidth=borderWidth,text="-", height=1, width=3, command = RzjogNeg, highlightbackground='#3E4149')
 RzjogNegBut.place(x=1092, y=210)
 
-RzjogPosBut = Button(tab1, borderwidth=borderWidth,text="+", height=1, width=3, command = RzjogPos)
+RzjogPosBut = Button(tab1, borderwidth=borderWidth,text="+", height=1, width=3, command = RzjogPos, highlightbackground='#3E4149')
 RzjogPosBut.place(x=1130, y=210)
 
 
 
-TrackjogNegBut = Button(tab1, borderwidth=borderWidth,text="-", height=1, width=3, command = TrackjogNeg)
+TrackjogNegBut = Button(tab1, borderwidth=borderWidth,text="-", height=1, width=3, command = TrackjogNeg, highlightbackground='#3E4149')
 TrackjogNegBut.place(x=1212, y=210)
 
-TrackjogPosBut = Button(tab1, borderwidth=borderWidth,text="+", height=1, width=3, command = TrackjogPos)
+TrackjogPosBut = Button(tab1, borderwidth=borderWidth,text="+", height=1, width=3, command = TrackjogPos, highlightbackground='#3E4149')
 TrackjogPosBut.place(x=1250, y=210)
 
 
@@ -5566,47 +5566,47 @@ TrackjogPosBut.place(x=1250, y=210)
 
 
 
-TXjogNegBut = Button(tab1, borderwidth=borderWidth,text="-", height=1, width=3, command = TXjogNeg)
+TXjogNegBut = Button(tab1, borderwidth=borderWidth,text="-", height=1, width=3, command = TXjogNeg, highlightbackground='#3E4149')
 TXjogNegBut.place(x=642, y=310)
 
-TXjogPosBut = Button(tab1, borderwidth=borderWidth,text="+", height=1, width=3, command = TXjogPos)
+TXjogPosBut = Button(tab1, borderwidth=borderWidth,text="+", height=1, width=3, command = TXjogPos, highlightbackground='#3E4149')
 TXjogPosBut.place(x=680, y=310)
 
-TYjogNegBut = Button(tab1, borderwidth=borderWidth,text="-", height=1, width=3, command = TYjogNeg)
+TYjogNegBut = Button(tab1, borderwidth=borderWidth,text="-", height=1, width=3, command = TYjogNeg, highlightbackground='#3E4149')
 TYjogNegBut.place(x=732, y=310)
 
-TYjogPosBut = Button(tab1, borderwidth=borderWidth,text="+", height=1, width=3, command = TYjogPos)
+TYjogPosBut = Button(tab1, borderwidth=borderWidth,text="+", height=1, width=3, command = TYjogPos, highlightbackground='#3E4149')
 TYjogPosBut.place(x=770, y=310)
 
-TZjogNegBut = Button(tab1, borderwidth=borderWidth,text="-", height=1, width=3, command = TZjogNeg)
+TZjogNegBut = Button(tab1, borderwidth=borderWidth,text="-", height=1, width=3, command = TZjogNeg, highlightbackground='#3E4149')
 TZjogNegBut.place(x=822, y=310)
 
-TZjogPosBut = Button(tab1, borderwidth=borderWidth,text="+", height=1, width=3, command = TZjogPos)
+TZjogPosBut = Button(tab1, borderwidth=borderWidth,text="+", height=1, width=3, command = TZjogPos, highlightbackground='#3E4149')
 TZjogPosBut.place(x=860, y=310)
 
-TRxjogNegBut = Button(tab1, borderwidth=borderWidth,text="-", height=1, width=3, command = TRxjogNeg)
+TRxjogNegBut = Button(tab1, borderwidth=borderWidth,text="-", height=1, width=3, command = TRxjogNeg, highlightbackground='#3E4149')
 TRxjogNegBut.place(x=912, y=310)
 
-TRxjogPosBut = Button(tab1, borderwidth=borderWidth,text="+", height=1, width=3, command = TRxjogPos)
+TRxjogPosBut = Button(tab1, borderwidth=borderWidth,text="+", height=1, width=3, command = TRxjogPos, highlightbackground='#3E4149')
 TRxjogPosBut.place(x=950, y=310)
 
-TRyjogNegBut = Button(tab1, borderwidth=borderWidth,text="-", height=1, width=3, command = TRyjogNeg)
+TRyjogNegBut = Button(tab1, borderwidth=borderWidth,text="-", height=1, width=3, command = TRyjogNeg, highlightbackground='#3E4149')
 TRyjogNegBut.place(x=1002, y=310)
 
-TRyjogPosBut = Button(tab1, borderwidth=borderWidth,text="+", height=1, width=3, command = TRyjogPos)
+TRyjogPosBut = Button(tab1, borderwidth=borderWidth,text="+", height=1, width=3, command = TRyjogPos, highlightbackground='#3E4149')
 TRyjogPosBut.place(x=1040, y=310)
 
-TRzjogNegBut = Button(tab1, borderwidth=borderWidth,text="-", height=1, width=3, command = TRzjogNeg)
+TRzjogNegBut = Button(tab1, borderwidth=borderWidth,text="-", height=1, width=3, command = TRzjogNeg, highlightbackground='#3E4149')
 TRzjogNegBut.place(x=1092, y=310)
 
-TRzjogPosBut = Button(tab1, borderwidth=borderWidth,text="+", height=1, width=3, command = TRzjogPos)
+TRzjogPosBut = Button(tab1, borderwidth=borderWidth,text="+", height=1, width=3, command = TRzjogPos, highlightbackground='#3E4149')
 TRzjogPosBut.place(x=1130, y=310)
 
 
 JogStepsCbut = Checkbutton(tab1, text="Jog joints in steps",variable = JogStepsStat)
 JogStepsCbut.place(x=1190, y=10)
 
-StorPosBut = Button(tab1, borderwidth=borderWidth, text="Stored Position", height=1, width=20, command = storPos)
+StorPosBut = Button(tab1, borderwidth=borderWidth, text="Stored Position", height=1, width=20, command = storPos, highlightbackground='#3E4149')
 StorPosBut.place(x=920, y=560)
 
 
@@ -7531,7 +7531,7 @@ AR2 ROBOT DESIGN FOR PROFIT.\n\
 \n\
 Copyright (c) 2017, Chris Annin"
 
-tkinter.messagebox.showwarning("AR2 License / Copyright notice", msg)
+#tkinter.messagebox.showwarning("AR2 License / Copyright notice", msg)
 xboxUse = 1
 
 tab1.mainloop()
